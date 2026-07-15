@@ -82,7 +82,7 @@ header.site {
   box-shadow: 0 10px 32px rgba(4, 12, 20, 0.35);
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.brand .brandmark { height: 26px; width: auto; display: block; color: inherit; }
+.brand .brandmark { height: 30px; width: auto; display: block; color: inherit; }
 .brand .wm-sub {
   font-family: var(--disp); font-weight: 500; font-size: 8.5px;
   letter-spacing: 0.3em; color: var(--muted-dark); text-transform: uppercase;
@@ -957,24 +957,20 @@ html.js [data-rv].in { opacity: 1; transform: none; }
 </div>
 <script>
 (function(){
-  var PASS = "aloha"; // пароль — поменять можно здесь
-  window.__deferIntro = true; // прелоадер запускаем только после ввода пароля
+  var PASS = "aloha";
+  window.__deferIntro = true;
   var g = document.getElementById('ib-gate');
   if (!g) return;
   var root = document.documentElement;
-  function go(){
-    if (g.parentNode) g.parentNode.removeChild(g);
-    root.style.overflow = '';
-    if (window.__runIntro) window.__runIntro();
-  }
+  function go(){ if (g.parentNode) g.parentNode.removeChild(g); root.style.overflow=''; if (window.__runIntro) window.__runIntro(); }
   if (sessionStorage.getItem('ib_ok') === '1') { go(); return; }
   root.style.overflow = 'hidden';
-  var f = document.getElementById('ib-form'), i = document.getElementById('ib-input'), e = document.getElementById('ib-err');
-  setTimeout(function(){ try { i.focus(); } catch(_){} }, 60);
+  var f=document.getElementById('ib-form'), i=document.getElementById('ib-input'), e=document.getElementById('ib-err');
+  setTimeout(function(){ try{ i.focus(); }catch(_){} }, 60);
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
     if (i.value === PASS) { sessionStorage.setItem('ib_ok','1'); go(); }
-    else { e.textContent = 'Неверный пароль'; i.value=''; i.focus(); }
+    else { e.textContent='Неверный пароль'; i.value=''; i.focus(); }
   });
 })();
 </script>
