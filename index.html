@@ -419,6 +419,8 @@ html.js [data-rv].in { opacity: 1; transform: none; }
   }
 }
 
+.slide-text .co-mark { display: block; width: 40px; margin-bottom: 18px; }
+.slide-text .co-mark svg { width: 100%; height: auto; display: block; }
 </style>
 
 <script>document.documentElement.classList.add('js')</script>
@@ -479,27 +481,22 @@ html.js [data-rv].in { opacity: 1; transform: none; }
         <div class="panel-sticky">
           <div class="panel-viewport" id="panelViewport">
             <div class="slide-panel is-active" data-i="0">
-              <canvas id="cv-prod" aria-hidden="true"></canvas>
-              <span class="chip" style="top:14%; left:8%">строчка 301 · шаг 4 мм</span>
-              <span class="chip" style="bottom:12%; right:10%">партия от 50 шт</span>
-              <svg class="cursor" style="bottom:22%; right:34%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
-            </div>
-            <div class="slide-panel" data-i="1">
               <canvas id="cv-tkany" aria-hidden="true"></canvas>
               <span class="chip" style="top:12%; right:9%">ПВХ · 650 г/м²</span>
               <span class="chip" style="bottom:14%; left:8%">UV · влагостойкость</span>
               <svg class="cursor" style="top:26%; right:38%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
             </div>
-            <div class="slide-panel" data-i="2">
+            <div class="slide-panel" data-i="1">
               <canvas id="cv-biflex" aria-hidden="true"></canvas>
               <span class="chip" style="top:15%; left:10%">растяжение ×2</span>
               <span class="chip" style="bottom:13%; right:9%">эластан 20%</span>
               <svg class="cursor" style="bottom:26%; left:36%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
             </div>
-            <div class="slide-panel" data-i="3">
-              <canvas id="cv-emdi" aria-hidden="true"></canvas>
-              <span class="chip" style="top:13%; right:10%">коллекции · опт</span>
-              <svg class="cursor" style="top:30%; left:30%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
+            <div class="slide-panel" data-i="2">
+              <canvas id="cv-prod" aria-hidden="true"></canvas>
+              <span class="chip" style="top:14%; left:8%">строчка 301 · шаг 4 мм</span>
+              <span class="chip" style="bottom:12%; right:10%">партия от 50 шт</span>
+              <svg class="cursor" style="bottom:22%; right:34%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
             </div>
           </div>
         </div>
@@ -507,20 +504,9 @@ html.js [data-rv].in { opacity: 1; transform: none; }
 
       <div class="text-col" id="stepCol">
         <div class="slide-text is-active" data-i="0">
-          <span class="k idx">(01) · Контрактное производство</span>
-          <h3>Производство</h3>
-          <p class="desc">
-            Швейное производство полного цикла: купальники и спортивная одежда,
-            корпоративная форма, стартовые майки, машинная вышивка и печать
-            на ткани. Собственный дизайнерский отдел — от макета до партии.
-          </p>
-          <a class="site-link" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener">
-            Перейти на сайт <span class="mono">iceberg.spb.ru ↗</span>
-          </a>
-        </div>
-        <div class="slide-text" data-i="1">
-          <span class="k idx">(02) · Оптовые поставки</span>
-          <h3>Технические ткани</h3>
+          <span class="co-mark" style="color:#2B6FA4"><svg viewBox="0 0 49 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.9647 5L10 21.5493L13.7529 23.3099L11.3647 26.4789L27.0588 30L26.3765 28.2394L39 25.4225L28.4235 9.57747L27.0588 10.9859L22.9647 5Z" stroke="currentColor" stroke-width="3"/></svg></span>
+          <span class="k idx">(01) · Технические ткани</span>
+          <h3>Iceberg Tech</h3>
           <p class="desc">
             Тентовые, мембранные, курточные и рюкзачные материалы, ткани
             для катеров и яхт. Крупнейший ассортимент технических тканей
@@ -530,9 +516,10 @@ html.js [data-rv].in { opacity: 1; transform: none; }
             Перейти на сайт <span class="mono">tkany.com ↗</span>
           </a>
         </div>
-        <div class="slide-text" data-i="2">
-          <span class="k idx">(03) · Эластичные ткани</span>
-          <h3>Biflex</h3>
+        <div class="slide-text" data-i="1">
+          <span class="co-mark" style="color:#E23D3D"><svg viewBox="0 0 49 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.9647 5L10 21.5493L13.7529 23.3099L11.3647 26.4789L27.0588 30L26.3765 28.2394L39 25.4225L28.4235 9.57747L27.0588 10.9859L22.9647 5Z" stroke="currentColor" stroke-width="3"/></svg></span>
+          <span class="k idx">(02) · Эластичные ткани</span>
+          <h3>Iceberg Biflex</h3>
           <p class="desc">
             Эластаносодержащие полотна бифлекс с растяжением в двух
             направлениях — для купальников, спортивной и танцевальной одежды.
@@ -542,16 +529,17 @@ html.js [data-rv].in { opacity: 1; transform: none; }
             Перейти на сайт <span class="mono">biflex.tkany.com ↗</span>
           </a>
         </div>
-        <div class="slide-text" data-i="3">
-          <span class="k idx">(04) · Бренд одежды</span>
-          <h3>EMDI</h3>
+        <div class="slide-text" data-i="2">
+          <span class="co-mark" style="color:#37B26B"><svg viewBox="0 0 49 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.9647 5L10 21.5493L13.7529 23.3099L11.3647 26.4789L27.0588 30L26.3765 28.2394L39 25.4225L28.4235 9.57747L27.0588 10.9859L22.9647 5Z" stroke="currentColor" stroke-width="3"/></svg></span>
+          <span class="k idx">(03) · Контрактное производство</span>
+          <h3>Iceberg Factory</h3>
           <p class="desc">
-            Собственный бренд купальников и одежды для фитнеса — выпускается
-            с 2003 года. Сотрудничество с оптовыми покупателями,
-            складские коллекции в наличии.
+            Швейное производство полного цикла: купальники и спортивная одежда,
+            корпоративная форма, стартовые майки, машинная вышивка и печать
+            на ткани. Собственный дизайнерский отдел — от макета до партии.
           </p>
-          <a class="site-link" href="https://emdi.ru" target="_blank" rel="noopener">
-            Перейти на сайт <span class="mono">emdi.ru ↗</span>
+          <a class="site-link" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener">
+            Перейти на сайт <span class="mono">iceberg.spb.ru ↗</span>
           </a>
         </div>
       </div>
@@ -703,9 +691,9 @@ html.js [data-rv].in { opacity: 1; transform: none; }
       </a>
       <div class="col">
         <span class="k">Наши компании</span>
-        <a href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener">Производство <span class="mono">iceberg.spb.ru</span></a>
-        <a href="https://tkany.com" target="_blank" rel="noopener">Технические ткани <span class="mono">tkany.com</span></a>
-        <a href="https://biflex.tkany.com" target="_blank" rel="noopener">Biflex <span class="mono">biflex.tkany.com</span></a>
+        <a href="https://tkany.com" target="_blank" rel="noopener">Iceberg Tech <span class="mono">tkany.com</span></a>
+        <a href="https://biflex.tkany.com" target="_blank" rel="noopener">Iceberg Biflex <span class="mono">biflex.tkany.com</span></a>
+        <a href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener">Iceberg Factory <span class="mono">iceberg.spb.ru</span></a>
         <a href="https://emdi.ru" target="_blank" rel="noopener">EMDI <span class="mono">emdi.ru</span></a>
       </div>
       <div class="col">
@@ -844,14 +832,6 @@ html.js [data-rv].in { opacity: 1; transform: none; }
     }
   });
 
-  // EMDI: мягкие складки драпировки
-  fabricField('cv-emdi', {
-    n: 26, scale: 1.15, dy: 0.06,
-    c1: '#6FA8D4', c2: '#8FC0DF',
-    z: function (u, v, t) {
-      return 0.08 * Math.sin(u * 21 + t * 0.0006) * (0.2 + 0.8 * v);
-    }
-  });
 })();
 
 // Наши компании: scrollytelling — липкий визуал справа, шаги слева активируются по скроллу
