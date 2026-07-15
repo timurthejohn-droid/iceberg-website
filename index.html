@@ -369,7 +369,64 @@ footer.site { background: var(--navy); color: var(--frost); padding: 70px 0 50px
   #hero .inner { padding-top: 88px; padding-bottom: 76px; }
   #companies, #audience, #contacts, #numbers { padding-top: 72px; padding-bottom: 72px; }
 }
+
+/* ═══ ПРЕЛОАДЕР + ПОЯВЛЕНИЕ ═══ */
+.ib-loader { display: none; }
+html.js .ib-loader {
+  display: flex; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 2147483000; background: #081420;
+  transition: opacity .55s ease, visibility .55s ease;
+}
+.ib-loader.is-hiding { opacity: 0; visibility: hidden; }
+.ib-loader svg { width: 104px; height: auto; animation: ibPulse 1.5s ease-in-out infinite; }
+.ib-loader path { animation: ibColors .8s linear infinite; }
+@keyframes ibColors {
+  0%,18%   { stroke: #2B6FA4; }
+  25%,43%  { stroke: #E23D3D; }
+  50%,68%  { stroke: #F2C230; }
+  75%,93%  { stroke: #37B26B; }
+  100%     { stroke: #2B6FA4; }
+}
+@keyframes ibPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+
+/* появление хиро по очереди */
+html.js header.site .bar,
+html.js #hero .k, html.js #hero h1, html.js #hero .sub, html.js #hero .cta,
+html.js #hero .scroll-hint {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+}
+body.is-ready header.site .bar   { opacity: 1; transform: none; transition-delay: 0s; }
+body.is-ready #hero .k           { opacity: 1; transform: none; transition-delay: .12s; }
+body.is-ready #hero h1           { opacity: 1; transform: none; transition-delay: .22s; }
+body.is-ready #hero .sub         { opacity: 1; transform: none; transition-delay: .40s; }
+body.is-ready #hero .cta         { opacity: 1; transform: none; transition-delay: .52s; }
+body.is-ready #hero .scroll-hint { opacity: 1; transform: none; transition-delay: .72s; }
+
+/* появление секций по мере скролла */
+html.js [data-rv] {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+}
+html.js [data-rv].in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ib-loader svg, .ib-loader path { animation: none; }
+  html.js header.site .bar,
+  html.js #hero .k, html.js #hero h1, html.js #hero .sub, html.js #hero .cta,
+  html.js #hero .scroll-hint, html.js [data-rv] {
+    opacity: 1 !important; transform: none !important; transition: none !important;
+  }
+}
+
 </style>
+
+<script>document.documentElement.classList.add('js')</script>
+<div class="ib-loader" id="ibLoader" aria-hidden="true">
+  <svg viewBox="0 0 49 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.9647 5L10 21.5493L13.7529 23.3099L11.3647 26.4789L27.0588 30L26.3765 28.2394L39 25.4225L28.4235 9.57747L27.0588 10.9859L22.9647 5Z" stroke="#2B6FA4" stroke-width="3"/>
+  </svg>
+</div>
 
 <header class="site">
   <div class="wrap bar">
@@ -835,6 +892,54 @@ footer.site { background: var(--navy); color: var(--frost); padding: 70px 0 50px
   window.addEventListener('resize', onScroll);
   calc();
 })();
+
+// ═══ Прелоадер + последовательное появление ═══
+(function () {
+  var loader = document.getElementById('ibLoader');
+
+  function reveal() { document.body.classList.add('is-ready'); }
+
+  function setupScrollReveal() {
+    var sel = '#numbers .lede, #numbers .stat, #clients .k, #audience .aud-grid > *, #contacts .con-grid > *';
+    var els = document.querySelectorAll(sel);
+    if (!('IntersectionObserver' in window)) {
+      for (var i = 0; i < els.length; i++) els[i].classList.add('in');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    for (var j = 0; j < els.length; j++) {
+      els[j].setAttribute('data-rv', '');
+      io.observe(els[j]);
+    }
+  }
+
+  window.__runIntro = function () {
+    setupScrollReveal();
+    try {
+      if (loader) {
+        setTimeout(function () { loader.classList.add('is-hiding'); }, 1750);
+        setTimeout(function () { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 2350);
+      }
+      setTimeout(reveal, 1850);
+    } catch (err) { reveal(); }
+  };
+
+  window.addEventListener('load', function () {
+    if (!window.__deferIntro) window.__runIntro();
+  });
+
+  // страховка: не оставлять прелоадер висеть
+  setTimeout(function () {
+    if (!window.__deferIntro && loader && loader.parentNode) {
+      loader.classList.add('is-hiding'); reveal();
+    }
+  }, 5000);
+})();
+
 </script>
 
 <div id="ib-gate" style="position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#081420;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;">
@@ -853,23 +958,23 @@ footer.site { background: var(--navy); color: var(--frost); padding: 70px 0 50px
 <script>
 (function(){
   var PASS = "aloha"; // пароль — поменять можно здесь
+  window.__deferIntro = true; // прелоадер запускаем только после ввода пароля
   var g = document.getElementById('ib-gate');
   if (!g) return;
-  if (sessionStorage.getItem('ib_ok') === '1') { g.parentNode.removeChild(g); return; }
   var root = document.documentElement;
+  function go(){
+    if (g.parentNode) g.parentNode.removeChild(g);
+    root.style.overflow = '';
+    if (window.__runIntro) window.__runIntro();
+  }
+  if (sessionStorage.getItem('ib_ok') === '1') { go(); return; }
   root.style.overflow = 'hidden';
   var f = document.getElementById('ib-form'), i = document.getElementById('ib-input'), e = document.getElementById('ib-err');
   setTimeout(function(){ try { i.focus(); } catch(_){} }, 60);
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
-    if (i.value === PASS) {
-      sessionStorage.setItem('ib_ok','1');
-      root.style.overflow = '';
-      g.parentNode.removeChild(g);
-    } else {
-      e.textContent = 'Неверный пароль';
-      i.value = ''; i.focus();
-    }
+    if (i.value === PASS) { sessionStorage.setItem('ib_ok','1'); go(); }
+    else { e.textContent = 'Неверный пароль'; i.value=''; i.focus(); }
   });
 })();
 </script>
