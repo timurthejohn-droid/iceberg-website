@@ -222,7 +222,7 @@ body.is-ready #hero .cta { opacity: 1; transform: none; transition-delay: .58s; 
 body.is-ready #hero .scroll-hint { opacity: 1; transform: none; transition-delay: .74s; }
 html.js [data-rv] { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1); }
 html.js [data-rv].in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track,#hero .scene svg,.hero-sun{animation:none!important;}
+@media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track,#hero .scene svg,.hero-sun,.slide-panel [class^="an-"]{animation:none!important;}
   html.js header.site .bar, html.js #hero .k, html.js #hero h1, html.js #hero .sub, html.js #hero .cta, html.js #hero .scroll-hint, html.js [data-rv]{opacity:1!important;transform:none!important;transition:none!important;} }
 
 /* адаптив */
@@ -239,6 +239,28 @@ html.js [data-rv].in { opacity: 1; transform: none; }
   .foot { grid-template-columns: 1fr 1fr; gap: 28px; }
 }
 @media (max-width: 560px) { .foot { grid-template-columns: 1fr; } #hero .cta { flex-direction: column; align-items: stretch; } #hero .cta .btn { justify-content: center; } }
+
+/* ── анимации карточек направлений ── */
+.slide-panel .scn svg { display:block; width:100%; height:100%; }
+.an-boat { transform-box: fill-box; transform-origin: 50% 100%; animation: boatBob 4.4s ease-in-out infinite; }
+@keyframes boatBob { 0%,100%{ transform: translateY(0) rotate(-1.3deg);} 50%{ transform: translateY(-9px) rotate(1.3deg);} }
+.an-tent { transform-box: fill-box; transform-origin: 50% 0%; animation: tentUnfold 4.4s ease-in-out infinite; }
+@keyframes tentUnfold { 0%{ transform: scaleY(.02);} 20%{ transform: scaleY(1);} 72%{ transform: scaleY(1);} 90%,100%{ transform: scaleY(.02);} }
+.an-flag { transform-box: fill-box; transform-origin: 0% 50%; animation: flagWave 1.3s ease-in-out infinite; }
+@keyframes flagWave { 0%,100%{ transform: scaleX(1) skewY(0);} 50%{ transform: scaleX(.62) skewY(-7deg);} }
+.an-stretch { transform-box: fill-box; transform-origin: center; animation: stretch2 3.6s ease-in-out infinite; }
+@keyframes stretch2 { 0%,100%{ transform: scale(1,1);} 25%{ transform: scale(1.4,.78);} 50%{ transform: scale(1,1);} 75%{ transform: scale(.78,1.4);} }
+.an-arrows { transform-box: fill-box; transform-origin: center; animation: arrPulse 3.6s ease-in-out infinite; }
+@keyframes arrPulse { 0%,50%,100%{ opacity:.45;} 25%,75%{ opacity:1;} }
+.an-needle { transform-box: fill-box; transform-origin: 50% 0%; animation: needleStitch .52s ease-in-out infinite; }
+@keyframes needleStitch { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(22px);} }
+.an-fabric { animation: fabricRun 5.5s linear infinite; }
+@keyframes fabricRun { from{ transform: translateX(-70px);} to{ transform: translateX(70px);} }
+.an-stitch { animation: stitchRun 1.1s linear infinite; }
+@keyframes stitchRun { to { stroke-dashoffset: -28; } }
+.an-wheel { transform-box: fill-box; transform-origin: center; animation: spin 2.6s linear infinite; }
+.an-spool { animation: spin 3.4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 <script>document.documentElement.classList.add('js')</script>
@@ -281,19 +303,65 @@ html.js [data-rv].in { opacity: 1; transform: none; }
     <div class="wrap pin-grid">
       <div class="panel-col"><div class="panel-sticky"><div class="panel-viewport" id="panelViewport">
         <div class="slide-panel is-active" data-i="0">
-          <div class="scn"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="660" fill="#F7DEA0"/><path d="M0 0.0 L29.2 2.4 L58.5 4.6 L87.7 6.4 L116.9 7.9 L146.2 8.7 L175.4 9.0 L204.6 8.6 L233.8 7.6 L263.1 6.1 L292.3 4.2 L321.5 1.9 L350.8 -0.4 L380.0 -2.8 L409.2 -4.9 L438.5 -6.7 L467.7 -8.1 L496.9 -8.8 L526.2 -9.0 L555.4 -8.5 L584.6 -7.4 L613.8 -5.8 L643.1 -3.8 L672.3 -1.5 L701.5 0.9 L730.8 3.2 L760.0 5.3 L760.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 145.2 L29.2 148.1 L58.5 150.8 L87.7 153.1 L116.9 154.8 L146.2 155.9 L175.4 156.2 L204.6 155.7 L233.8 154.5 L263.1 152.7 L292.3 150.3 L321.5 147.6 L350.8 144.7 L380.0 141.8 L409.2 139.2 L438.5 137.0 L467.7 135.3 L496.9 134.4 L526.2 134.2 L555.4 134.8 L584.6 136.1 L613.8 138.1 L643.1 140.6 L672.3 143.3 L701.5 146.3 L730.8 149.1 L760.0 151.7 L760.0 660.0 L0 660.0 Z" fill="#2B5E8E"/><path d="M0 264.0 L29.2 267.2 L58.5 270.1 L87.7 272.6 L116.9 274.5 L146.2 275.7 L175.4 276.0 L204.6 275.5 L233.8 274.2 L263.1 272.2 L292.3 269.6 L321.5 266.6 L350.8 263.4 L380.0 260.3 L409.2 257.4 L438.5 255.0 L467.7 253.2 L496.9 252.2 L526.2 252.0 L555.4 252.7 L584.6 254.1 L613.8 256.3 L643.1 258.9 L672.3 262.0 L701.5 265.2 L730.8 268.3 L760.0 271.1 L760.0 660.0 L0 660.0 Z" fill="#A9C6DD"/><circle cx="212.8" cy="290.4" r="49.5" fill="#F7DEA0"/><path d="M0 422.4 L0.0 422.4 L68.4 330.0 L129.2 389.4 L197.6 264.0 L266.0 363.0 L334.4 237.6 L410.4 349.8 L478.8 270.6 L554.8 376.2 L623.2 303.6 L691.6 389.4 L760.0 330.0 L760.0 660.0 L0 660.0 Z" fill="#2B5E8E"/><path d="M0 528.0 L0.0 528.0 L83.6 448.8 L159.6 495.0 L250.8 402.6 L342.0 481.8 L425.6 389.4 L509.2 475.2 L600.4 415.8 L676.4 488.4 L760.0 435.6 L760.0 660.0 L0 660.0 Z" fill="#241D14"/><path d="M0 528.0 L0.0 528.0 L83.6 448.8 L159.6 495.0 L250.8 402.6 L342.0 481.8 L425.6 389.4 L509.2 475.2 L600.4 415.8 L676.4 488.4 L760.0 435.6" fill="none" stroke="#F6EDD9" stroke-width="4.0" stroke-linejoin="round" opacity=".9"/></svg></div>
+          <div class="scn"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<rect width="760" height="660" fill="#F7DEA0"/>
+<rect width="760" height="392" fill="#EFE2C6"/>
+<circle cx="600" cy="132" r="52" fill="#F4B63C" opacity=".85"/>
+<path d="M0 392 Q190 372 380 392 T760 392 L760 660 L0 660 Z" fill="#2B5E8E"/>
+<path d="M0 452 Q190 434 380 452 T760 452 L760 660 L0 660 Z" fill="#16395A"/>
+<g class="an-boat">
+  <rect x="384" y="196" width="7" height="242" fill="#241D14"/>
+  <path class="an-flag" d="M391 196 L432 206 L391 218 Z" fill="#E1962B"/>
+  <g class="an-tent">
+    <path d="M300 300 Q388 268 476 300 L476 314 Q388 284 300 314 Z" fill="#F4B63C" stroke="#241D14" stroke-width="4"/>
+    <rect x="300" y="300" width="7" height="140" fill="#241D14"/>
+    <rect x="469" y="300" width="7" height="140" fill="#241D14"/>
+  </g>
+  <path d="M288 432 L492 432 L456 486 L324 486 Z" fill="#241D14"/>
+  <path d="M300 432 L480 432 L470 448 L310 448 Z" fill="#3A2E1E"/>
+</g>
+</svg></div>
           <span class="chip" style="top:11%; right:8%">ПВХ · 650 г/м²</span>
           <span class="chip" style="bottom:12%; left:7%">UV · влагостойкость</span>
           <svg class="cursor" style="top:24%; right:36%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
         </div>
         <div class="slide-panel" data-i="1">
-          <div class="scn"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="660" fill="#F6EDD9"/><path d="M0 0.0 L29.2 2.4 L58.5 4.6 L87.7 6.4 L116.9 7.9 L146.2 8.7 L175.4 9.0 L204.6 8.6 L233.8 7.6 L263.1 6.1 L292.3 4.2 L321.5 1.9 L350.8 -0.4 L380.0 -2.8 L409.2 -4.9 L438.5 -6.7 L467.7 -8.1 L496.9 -8.8 L526.2 -9.0 L555.4 -8.5 L584.6 -7.4 L613.8 -5.8 L643.1 -3.8 L672.3 -1.5 L701.5 0.9 L730.8 3.2 L760.0 5.3 L760.0 660.0 L0 660.0 Z" fill="#E1962B"/><path d="M0 158.4 L29.2 161.6 L58.5 164.5 L87.7 167.0 L116.9 168.9 L146.2 170.1 L175.4 170.4 L204.6 169.9 L233.8 168.6 L263.1 166.6 L292.3 164.0 L321.5 161.0 L350.8 157.8 L380.0 154.7 L409.2 151.8 L438.5 149.4 L467.7 147.6 L496.9 146.6 L526.2 146.4 L555.4 147.1 L584.6 148.5 L613.8 150.7 L643.1 153.3 L672.3 156.4 L701.5 159.6 L730.8 162.7 L760.0 165.5 L760.0 660.0 L0 660.0 Z" fill="#F4B63C"/><path d="M0 264.0 L29.2 267.2 L58.5 270.1 L87.7 272.6 L116.9 274.5 L146.2 275.7 L175.4 276.0 L204.6 275.5 L233.8 274.2 L263.1 272.2 L292.3 269.6 L321.5 266.6 L350.8 263.4 L380.0 260.3 L409.2 257.4 L438.5 255.0 L467.7 253.2 L496.9 252.2 L526.2 252.0 L555.4 252.7 L584.6 254.1 L613.8 256.3 L643.1 258.9 L672.3 262.0 L701.5 265.2 L730.8 268.3 L760.0 271.1 L760.0 660.0 L0 660.0 Z" fill="#F7DEA0"/><circle cx="532.0" cy="237.6" r="59.4" fill="#F7DEA0"/><path d="M0 422.4 L0.0 422.4 L68.4 330.0 L129.2 389.4 L197.6 264.0 L266.0 363.0 L334.4 237.6 L410.4 349.8 L478.8 270.6 L554.8 376.2 L623.2 303.6 L691.6 389.4 L760.0 330.0 L760.0 660.0 L0 660.0 Z" fill="#2B5E8E"/><path d="M0 528.0 L0.0 528.0 L83.6 448.8 L159.6 495.0 L250.8 402.6 L342.0 481.8 L425.6 389.4 L509.2 475.2 L600.4 415.8 L676.4 488.4 L760.0 435.6 L760.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 528.0 L0.0 528.0 L83.6 448.8 L159.6 495.0 L250.8 402.6 L342.0 481.8 L425.6 389.4 L509.2 475.2 L600.4 415.8 L676.4 488.4 L760.0 435.6" fill="none" stroke="#F6EDD9" stroke-width="4.0" stroke-linejoin="round" opacity=".9"/></svg></div>
+          <div class="scn"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<rect width="760" height="660" fill="#EFE2C6"/>
+<g class="an-arrows" fill="#E1962B">
+  <g transform="translate(150 296)"><path d="M0 14 l18 -11 v7 h20 v-7 l18 11 l-18 11 v-7 h-20 v7 Z"/></g>
+  <g transform="translate(556 296)"><path d="M0 14 l18 -11 v7 h20 v-7 l18 11 l-18 11 v-7 h-20 v7 Z"/></g>
+  <g transform="translate(366 118)"><path d="M14 0 l-11 18 h7 v20 h-7 l11 18 l11 -18 h-7 v-20 h7 Z"/></g>
+  <g transform="translate(366 476)"><path d="M14 0 l-11 18 h7 v20 h-7 l11 18 l11 -18 h-7 v-20 h7 Z"/></g>
+</g>
+<g class="an-stretch">
+  <rect x="280" y="210" width="200" height="200" rx="14" fill="#2B5E8E" stroke="#241D14" stroke-width="5"/>
+  <g stroke="#F6EDD9" stroke-width="3" opacity=".85">
+    <line x1="330" y1="210" x2="330" y2="410"/><line x1="380" y1="210" x2="380" y2="410"/><line x1="430" y1="210" x2="430" y2="410"/>
+    <line x1="280" y1="260" x2="480" y2="260"/><line x1="280" y1="310" x2="480" y2="310"/><line x1="280" y1="360" x2="480" y2="360"/>
+  </g>
+</g>
+</svg></div>
           <span class="chip" style="top:13%; left:9%">растяжение ×2</span>
           <span class="chip" style="bottom:12%; right:8%">эластан 20%</span>
           <svg class="cursor" style="bottom:24%; left:34%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
         </div>
         <div class="slide-panel" data-i="2">
-          <div class="scn"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="660" fill="#F4B63C"/><path d="M0 0.0 L29.2 2.4 L58.5 4.6 L87.7 6.4 L116.9 7.9 L146.2 8.7 L175.4 9.0 L204.6 8.6 L233.8 7.6 L263.1 6.1 L292.3 4.2 L321.5 1.9 L350.8 -0.4 L380.0 -2.8 L409.2 -4.9 L438.5 -6.7 L467.7 -8.1 L496.9 -8.8 L526.2 -9.0 L555.4 -8.5 L584.6 -7.4 L613.8 -5.8 L643.1 -3.8 L672.3 -1.5 L701.5 0.9 L730.8 3.2 L760.0 5.3 L760.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 132.0 L29.2 134.9 L58.5 137.6 L87.7 139.9 L116.9 141.6 L146.2 142.7 L175.4 143.0 L204.6 142.5 L233.8 141.3 L263.1 139.5 L292.3 137.1 L321.5 134.4 L350.8 131.5 L380.0 128.6 L409.2 126.0 L438.5 123.8 L467.7 122.1 L496.9 121.2 L526.2 121.0 L555.4 121.6 L584.6 122.9 L613.8 124.9 L643.1 127.4 L672.3 130.1 L701.5 133.1 L730.8 135.9 L760.0 138.5 L760.0 660.0 L0 660.0 Z" fill="#2B5E8E"/><path d="M0 237.6 L29.2 241.0 L58.5 244.2 L87.7 246.9 L116.9 249.0 L146.2 250.2 L175.4 250.6 L204.6 250.1 L233.8 248.6 L263.1 246.5 L292.3 243.6 L321.5 240.4 L350.8 237.0 L380.0 233.6 L409.2 230.5 L438.5 227.9 L467.7 225.9 L496.9 224.8 L526.2 224.6 L555.4 225.3 L584.6 226.9 L613.8 229.2 L643.1 232.1 L672.3 235.4 L701.5 238.9 L730.8 242.2 L760.0 245.2 L760.0 660.0 L0 660.0 Z" fill="#E1962B"/><circle cx="380.0" cy="277.2" r="46.2" fill="#F7DEA0"/><path d="M0 422.4 L0.0 422.4 L68.4 330.0 L129.2 389.4 L197.6 264.0 L266.0 363.0 L334.4 237.6 L410.4 349.8 L478.8 270.6 L554.8 376.2 L623.2 303.6 L691.6 389.4 L760.0 330.0 L760.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 528.0 L0.0 528.0 L83.6 448.8 L159.6 495.0 L250.8 402.6 L342.0 481.8 L425.6 389.4 L509.2 475.2 L600.4 415.8 L676.4 488.4 L760.0 435.6 L760.0 660.0 L0 660.0 Z" fill="#241D14"/><path d="M0 528.0 L0.0 528.0 L83.6 448.8 L159.6 495.0 L250.8 402.6 L342.0 481.8 L425.6 389.4 L509.2 475.2 L600.4 415.8 L676.4 488.4 L760.0 435.6" fill="none" stroke="#F6EDD9" stroke-width="4.0" stroke-linejoin="round" opacity=".9"/></svg></div>
+          <div class="scn"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<rect width="760" height="660" fill="#F7DEA0"/>
+<rect y="452" width="760" height="208" fill="#EFE2C6"/>
+<g class="an-fabric"><rect x="-120" y="470" width="1000" height="64" rx="4" fill="#2B5E8E"/></g>
+<line class="an-stitch" x1="70" y1="502" x2="690" y2="502" stroke="#F4B63C" stroke-width="5" stroke-dasharray="16 12"/>
+<g fill="#241D14">
+  <rect x="150" y="452" width="470" height="30" rx="8"/>
+  <rect x="500" y="230" width="88" height="230" rx="10"/>
+  <rect x="212" y="230" width="376" height="52" rx="18"/>
+  <rect x="200" y="230" width="70" height="104" rx="12"/>
+</g>
+<circle class="an-wheel" cx="544" cy="330" r="30" fill="#E1962B" stroke="#241D14" stroke-width="6"/>
+<g class="an-spool" style="transform-origin:454px 208px"><rect x="446" y="188" width="16" height="44" rx="3" fill="#E1962B"/><rect x="436" y="184" width="36" height="8" rx="3" fill="#241D14"/></g>
+<g class="an-needle"><rect x="231" y="330" width="8" height="52" rx="2" fill="#241D14"/><rect x="233" y="380" width="4" height="22" fill="#9AA3AB"/></g>
+</svg></div>
           <span class="chip" style="top:12%; left:7%">строчка 301 · шаг 4 мм</span>
           <span class="chip" style="bottom:11%; right:9%">партия от 50 шт</span>
           <svg class="cursor" style="bottom:20%; right:32%" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 1 L16 11 L9 12 L12 18 L9 19.4 L6.4 13 L2 17 Z"/></svg>
