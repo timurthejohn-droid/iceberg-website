@@ -75,8 +75,9 @@ header.site:not(.scrolled) .btn.contact { background:var(--yellow); border-color
 .saga-sticky { position:sticky; top:0; height:100vh; overflow:hidden; }
 .saga-sky { position:absolute; inset:0; z-index:0; background:linear-gradient(180deg, var(--c-top,#122840) 0%, var(--c-mid,#16395A) 54%, var(--c-bot,#2E4670) 100%); }
 .saga-sun { position:absolute; z-index:1; width:172px; height:172px; border-radius:50%; left:var(--sx,82%); top:var(--sy,86%); opacity:var(--so,1); transform:translate(-50%,-50%); background:radial-gradient(circle,#FFF6DE 0%,#FCE9B8 38%,#F7DEA0 55%,rgba(247,222,160,0.42) 72%,rgba(247,222,160,0) 82%); will-change:left,top,opacity; }
-.saga-mtns { position:absolute; right:0; bottom:0; width:62%; height:60vh; z-index:2; pointer-events:none; }
+.saga-mtns { position:absolute; right:0; bottom:0; width:48%; height:56vh; z-index:2; pointer-events:none; }
 .saga-mtns svg { width:100%; height:100%; }
+@media (min-width:900px) and (max-width:1240px){ .saga-mtns { width:40%; height:50vh; } }
 .saga-stage { position:absolute; inset:0; z-index:3; display:grid; align-items:center; }
 .saga-stack { display:grid; }
 .saga-chapter { grid-area:1/1; align-self:center; max-width:600px; transition:none; }
@@ -291,7 +292,7 @@ html.js [data-rv].in { opacity:1; transform:none; }
       </div>
       <div class="saga-chapter ch-about" id="chAbout">
         <span class="k">О группе</span>
-        <h2>Тридцать лет <em>на совесть</em></h2>
+        <h2>35 лет <em>на совесть</em></h2>
         <p>«Айсберг» — группа компаний из Санкт-Петербурга. С 1991 года мы производим и поставляем ткани
         и одежду по всей России: технические и эластичные полотна, контрактный пошив и собственный бренд.
         За тридцать с лишним лет выросли из первого склада в группу с собственным производством — и остались
