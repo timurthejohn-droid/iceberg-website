@@ -78,6 +78,7 @@ header.site:not(.scrolled) .btn.contact { background:var(--yellow); border-color
 .saga-mtns { position:absolute; right:0; bottom:0; width:48%; height:56vh; z-index:2; pointer-events:none; }
 .saga-mtns svg { width:100%; height:100%; }
 @media (min-width:900px) and (max-width:1240px){ .saga-mtns { width:40%; height:50vh; } }
+.saga-scrim { display:none; position:absolute; inset:0; z-index:2; pointer-events:none; background:linear-gradient(180deg, rgba(var(--scrim,18,40,64),0) 0%, rgba(var(--scrim,18,40,64),0.58) 24%, rgba(var(--scrim,18,40,64),0.58) 80%, rgba(var(--scrim,18,40,64),0) 100%); }
 .saga-stage { position:absolute; inset:0; z-index:3; display:grid; align-items:center; }
 .saga-stack { display:grid; }
 .saga-chapter { grid-area:1/1; align-self:center; max-width:600px; transition:none; }
@@ -165,6 +166,25 @@ section { padding:clamp(84px,12vh,148px) 0; }
 .an-wheel { transform-box:fill-box; transform-origin:center; animation:spin 2.6s linear infinite; }
 .an-spool { animation:spin 3.4s linear infinite; } @keyframes spin { to{transform:rotate(360deg);} }
 
+/* ── КОМПАНИИ: мобильная свайп-карусель ── */
+.comp-carousel-wrap { display:none; }
+.comp-carousel { display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding:4px 0 12px; scrollbar-width:none; scroll-padding:0 20px; }
+.comp-carousel::-webkit-scrollbar { display:none; }
+.comp-card { flex:0 0 84%; scroll-snap-align:center; background:var(--cream); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 18px 40px -26px rgba(22,57,90,0.55); }
+.comp-card:last-child { margin-right:4px; }
+.comp-scene { position:relative; height:200px; border-bottom:1px solid var(--line); }
+.comp-scene .scn, .comp-scene svg { position:absolute; inset:0; width:100%; height:100%; }
+.comp-scene .chip { position:absolute; z-index:2; font-family:var(--mono); font-size:10px; padding:6px 9px; border-radius:3px; background:var(--cream); border:1px solid var(--ink); color:var(--ink); white-space:nowrap; box-shadow:2px 2px 0 rgba(36,29,20,0.9); }
+.comp-body { padding:18px 18px 22px; display:flex; flex-direction:column; }
+.comp-body .idx { color:var(--blue); display:block; margin-bottom:8px; }
+.comp-body h3 { font-size:27px; } .comp-body h3 em { color:var(--amber); }
+.comp-body .desc { margin:12px 0 16px; color:var(--muted); font-size:14.5px; }
+.comp-body .tags { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:18px; }
+.comp-body .tag { font-size:12px; padding:5px 11px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:var(--butter); }
+.comp-body .btn.ghost { align-self:flex-start; color:var(--ink); }
+.comp-body .btn .mono { font-family:var(--mono); font-size:12px; opacity:.75; }
+.comp-swipe { display:none; align-items:center; gap:8px; justify-content:center; margin-top:8px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
 /* ── ЦИФРЫ ── */
 #numbers { background:var(--blue-deep); color:var(--cream); }
 #numbers .lede { font-family:var(--disp); font-weight:700; line-height:1.06; font-size:clamp(28px,4.4vw,56px); max-width:20ch; margin-bottom:clamp(48px,7vw,86px); }
@@ -235,29 +255,40 @@ body.is-ready .ch-hero .hero-dirs { opacity:1; transform:none; transition-delay:
 body.is-ready .saga .scroll-hint { opacity:1; transform:none; transition-delay:.74s; }
 html.js [data-rv] { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1); }
 html.js [data-rv].in { opacity:1; transform:none; }
-@media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track,.slide-panel [class^="an-"]{animation:none!important;}
+@media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track,.slide-panel [class^="an-"],.comp-scene [class^="an-"]{animation:none!important;}
   html.js header.site .bar, html.js .ch-hero .k, html.js .ch-hero h1, html.js .ch-hero .sub, html.js .ch-hero .hero-dirs, html.js .saga .scroll-hint, html.js [data-rv]{opacity:1!important;transform:none!important;transition:none!important;} }
 
 @media (max-width: 899px) {
   .wrap { padding:0 20px; } nav.main { display:none; } .brand .brandmark { height:38px; }
-  .saga { height:auto; padding:0; background:var(--night); }
-  .saga-sticky { position:static; height:auto; overflow:visible; padding:104px 0 64px; }
-  .saga-sky, .saga-sun, .saga-mtns, .saga-anchor { display:none; }
-  .saga .scroll-hint { display:none; }
-  .saga-stage { position:static; display:block; }
-  .saga-stack { display:block; }
-  .saga-chapter { grid-area:auto; align-self:auto; max-width:none; opacity:1 !important; }
-  .ch-about { margin-top:38px; background:var(--cream); color:var(--ink); border-radius:14px; padding:32px 22px; }
-  .ch-about p { color:var(--muted); }
-  .ch-about .about-facts { border-top-color:var(--line); }
-  .ch-about .about-facts span { color:var(--muted); }
+  /* SAGA на мобиле: та же анимация, вертикальная композиция (солнце сверху, горы — горизонт снизу, текст на скрим-подложке) */
+  .saga { height:300vh; padding:0; background:var(--night); }
+  .saga-sticky { position:sticky; top:0; height:100vh; height:100svh; overflow:hidden; padding:0; }
+  .saga-sky, .saga-sun, .saga-mtns, .saga-scrim { display:block; }
+  .saga-anchor { display:none; }
+  .saga-sun { width:116px; height:116px; }
+  .saga-mtns { left:0; right:0; width:100%; height:24svh; bottom:0; }
+  .saga .scroll-hint { display:block; left:0; right:0; bottom:16px; text-align:center; }
+  .saga-chapter { max-width:none; }
+  .ch-hero .sub { display:none; }
+  .ch-hero h1 { font-size:clamp(32px,9vw,44px); }
+  .ch-hero .k, .ch-about .k { margin-bottom:14px; }
+  .ch-about { background:none; border-radius:0; padding:0; margin:0; }
+  .ch-about h2 { font-size:clamp(30px,8.4vw,42px); }
+  .ch-about p { font-size:15px; }
+  .ch-about .about-facts { gap:14px 22px; margin-top:22px; padding-top:18px; }
+  .ch-about .about-facts b { font-size:21px; }
+  .hero-dirs { flex-direction:row; flex-wrap:wrap; gap:8px; margin-top:22px; }
+  .hero-dirs .dir { flex:0 0 auto; padding:9px 13px; }
+  .hero-dirs .dir-k { display:none; } .hero-dirs .dir-n { font-size:13px; }
   .aud-row { flex-direction:column; align-items:flex-start; gap:16px; } .aud-go { justify-content:flex-start; max-width:none; }
-  .pin-grid { display:block; } .panel-col { margin-bottom:24px; } .panel-sticky { position:static; } .panel-viewport { height:60vh; }
-  .slide-text { min-height:auto; opacity:1; padding:28px 0; border-top:1px solid var(--line); } .slide-text:first-child { border-top:none; }
+  /* Компании: горизонтальный свайп вместо вертикального пина */
+  .pin-outer { display:none; }
+  .comp-carousel-wrap { display:block; }
+  .comp-swipe { display:flex; }
   .stat-grid { grid-template-columns:1fr; } .stat, .stat + .stat { border-left:none; padding-left:0; }
   .con-grid { grid-template-columns:1fr; } .foot { grid-template-columns:1fr 1fr; gap:28px; }
 }
-@media (max-width: 560px) { .foot { grid-template-columns:1fr; } .hero-dirs { flex-direction:column; } .hero-dirs .dir { width:100%; } }
+@media (max-width: 560px) { .foot { grid-template-columns:1fr; } }
 </style>
 
 <script>document.documentElement.classList.add('js')</script>
@@ -279,6 +310,7 @@ html.js [data-rv].in { opacity:1; transform:none; }
     <div class="saga-sky" id="sagaSky" aria-hidden="true"></div>
     <div class="saga-sun" id="sagaSun" aria-hidden="true"></div>
     <div class="saga-mtns" aria-hidden="true"><svg viewBox="0 0 820 520" width="100%" height="100%" preserveAspectRatio="xMaxYMax slice" xmlns="http://www.w3.org/2000/svg"><path d="M40 520 L150 250 L250 350 L360 180 L470 330 L560 220 L660 360 L740 240 L820 340 L820 520 Z" fill="#16395A"/><path d="M120 520 L250 300 L340 400 L470 250 L560 380 L680 280 L780 400 L820 360 L820 520 Z" fill="#241D14"/><path d="M120 520 L250 300 L340 400 L470 250 L560 380 L680 280 L780 400" fill="none" stroke="#F6EDD9" stroke-width="3" stroke-linejoin="round" opacity=".32"/></svg></div>
+    <div class="saga-scrim" id="sagaScrim" aria-hidden="true"></div>
     <div class="saga-stage"><div class="wrap"><div class="saga-stack">
       <div class="saga-chapter ch-hero" id="chHero">
         <span class="k">Группа компаний · Санкт-Петербург · с 1991 года</span>
@@ -399,6 +431,55 @@ html.js [data-rv].in { opacity:1; transform:none; }
         <a class="btn ghost sm" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener">Перейти на сайт <span class="mono">iceberg.spb.ru ↗</span></a></div>
     </div>
   </div></div>
+  <div class="wrap comp-carousel-wrap">
+    <div class="comp-carousel">
+      <article class="comp-card">
+        <div class="comp-scene"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<rect width="760" height="660" fill="#F7DEA0"/><rect width="760" height="392" fill="#EFE2C6"/>
+<circle cx="600" cy="132" r="52" fill="#F4B63C" opacity=".85"/>
+<path d="M0 392 Q190 372 380 392 T760 392 L760 660 L0 660 Z" fill="#2B5E8E"/>
+<path d="M0 452 Q190 434 380 452 T760 452 L760 660 L0 660 Z" fill="#16395A"/>
+<g class="an-boat"><rect x="384" y="196" width="7" height="242" fill="#241D14"/>
+<path class="an-flag" d="M391 196 L432 206 L391 218 Z" fill="#E1962B"/>
+<g class="an-tent"><path d="M300 300 Q388 268 476 300 L476 314 Q388 284 300 314 Z" fill="#F4B63C" stroke="#241D14" stroke-width="4"/>
+<rect x="300" y="300" width="7" height="140" fill="#241D14"/><rect x="469" y="300" width="7" height="140" fill="#241D14"/></g>
+<path d="M288 432 L492 432 L456 486 L324 486 Z" fill="#241D14"/><path d="M300 432 L480 432 L470 448 L310 448 Z" fill="#3A2E1E"/></g></svg><span class="chip" style="top:10%; right:7%">ПВХ · 650 г/м²</span></div>
+        <div class="comp-body"><span class="k idx">Технические ткани</span><h3>Iceberg <em>Tech</em></h3>
+          <p class="desc">Тентовые, мембранные, курточные и рюкзачные материалы, ткани для катеров и яхт. Крупнейший ассортимент в Санкт-Петербурге, доставка по всей России.</p>
+          <div class="tags"><span class="tag">Тенты</span><span class="tag">Мембраны</span><span class="tag">Ткани для яхт</span></div>
+          <a class="btn ghost sm" href="https://tkany.com" target="_blank" rel="noopener">Перейти на сайт <span class="mono">tkany.com ↗</span></a></div>
+      </article>
+      <article class="comp-card">
+        <div class="comp-scene"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<rect width="760" height="660" fill="#EFE2C6"/>
+<g class="an-arrows" fill="#E1962B"><g transform="translate(150 296)"><path d="M0 14 l18 -11 v7 h20 v-7 l18 11 l-18 11 v-7 h-20 v7 Z"/></g><g transform="translate(556 296)"><path d="M0 14 l18 -11 v7 h20 v-7 l18 11 l-18 11 v-7 h-20 v7 Z"/></g>
+<g transform="translate(366 118)"><path d="M14 0 l-11 18 h7 v20 h-7 l11 18 l11 -18 h-7 v-20 h7 Z"/></g><g transform="translate(366 476)"><path d="M14 0 l-11 18 h7 v20 h-7 l11 18 l11 -18 h-7 v-20 h7 Z"/></g></g>
+<g class="an-stretch"><rect x="280" y="210" width="200" height="200" rx="14" fill="#2B5E8E" stroke="#241D14" stroke-width="5"/>
+<g stroke="#F6EDD9" stroke-width="3" opacity=".85"><line x1="330" y1="210" x2="330" y2="410"/><line x1="380" y1="210" x2="380" y2="410"/><line x1="430" y1="210" x2="430" y2="410"/>
+<line x1="280" y1="260" x2="480" y2="260"/><line x1="280" y1="310" x2="480" y2="310"/><line x1="280" y1="360" x2="480" y2="360"/></g></g></svg><span class="chip" style="top:11%; left:8%">растяжение ×2</span></div>
+        <div class="comp-body"><span class="k idx">Эластичные ткани</span><h3>Iceberg <em>Biflex</em></h3>
+          <p class="desc">Эластаносодержащие полотна бифлекс с растяжением в двух направлениях — для купальников, спортивной и танцевальной одежды. Опт со склада.</p>
+          <div class="tags"><span class="tag">Купальники</span><span class="tag">Спорт</span><span class="tag">Танцевальная одежда</span></div>
+          <a class="btn ghost sm" href="https://biflex.tkany.com" target="_blank" rel="noopener">Перейти на сайт <span class="mono">biflex.tkany.com ↗</span></a></div>
+      </article>
+      <article class="comp-card">
+        <div class="comp-scene"><svg viewBox="0 0 760 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<rect width="760" height="660" fill="#F7DEA0"/><rect y="452" width="760" height="208" fill="#EFE2C6"/>
+<g class="an-fabric"><rect x="-120" y="470" width="1000" height="64" rx="4" fill="#2B5E8E"/></g>
+<line class="an-stitch" x1="70" y1="502" x2="690" y2="502" stroke="#F4B63C" stroke-width="5" stroke-dasharray="16 12"/>
+<g fill="#241D14"><rect x="150" y="452" width="470" height="30" rx="8"/><rect x="500" y="230" width="88" height="230" rx="10"/>
+<rect x="212" y="230" width="376" height="52" rx="18"/><rect x="200" y="230" width="70" height="104" rx="12"/></g>
+<circle class="an-wheel" cx="544" cy="330" r="30" fill="#E1962B" stroke="#241D14" stroke-width="6"/>
+<g class="an-spool" style="transform-origin:454px 208px"><rect x="446" y="188" width="16" height="44" rx="3" fill="#E1962B"/><rect x="436" y="184" width="36" height="8" rx="3" fill="#241D14"/></g>
+<g class="an-needle"><rect x="231" y="330" width="8" height="52" rx="2" fill="#241D14"/><rect x="233" y="380" width="4" height="22" fill="#9AA3AB"/></g></svg><span class="chip" style="top:10%; left:7%">строчка 301 · шаг 4 мм</span></div>
+        <div class="comp-body"><span class="k idx">Контрактное производство</span><h3>Iceberg <em>Factory</em></h3>
+          <p class="desc">Швейное производство полного цикла: купальники и спортивная одежда, форма, стартовые майки, вышивка и печать на ткани. Свой дизайн-отдел — от макета до партии.</p>
+          <div class="tags"><span class="tag">Пошив</span><span class="tag">Вышивка</span><span class="tag">Печать на ткани</span></div>
+          <a class="btn ghost sm" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener">Перейти на сайт <span class="mono">iceberg.spb.ru ↗</span></a></div>
+      </article>
+    </div>
+    <p class="comp-swipe"><span>←</span> Листайте вбок <span>→</span></p>
+  </div>
 </section>
 
 <section id="numbers">
@@ -464,6 +545,7 @@ html.js [data-rv].in { opacity:1; transform:none; }
   var saga=document.getElementById('saga'); if(!saga) return;
   var sky=document.getElementById('sagaSky'), sun=document.getElementById('sagaSun');
   var chHero=document.getElementById('chHero'), chAbout=document.getElementById('chAbout'), hint=document.getElementById('sagaHint');
+  var scrim=document.getElementById('sagaScrim');
   if(!sky||!sun||!chHero||!chAbout) return;
   // небо: ночь -> рассвет -> день (светло) -> золото -> закат
   var K=[
@@ -507,9 +589,12 @@ html.js [data-rv].in { opacity:1; transform:none; }
     var o = p<0.05 ? p/0.05 : (p>0.9 ? Math.max(0,1-(p-0.9)/0.1) : 1);
     sun.style.left=sp.x+'%'; sun.style.top=sp.y+'%'; sun.style.opacity=o.toFixed(2);
     // слоган -> о компании; о компании гаснет ДО того, как солнце спустится в левую (текстовую) зону
-    chHero.style.opacity=(1-seg(p,0.28,0.44)).toFixed(2);
-    chAbout.style.opacity=(seg(p,0.44,0.55)*(1-seg(p,0.68,0.76))).toFixed(2);
+    var hO=1-seg(p,0.28,0.44), aO=seg(p,0.44,0.55)*(1-seg(p,0.68,0.76));
+    chHero.style.opacity=hO.toFixed(2);
+    chAbout.style.opacity=aO.toFixed(2);
     if(hint) hint.style.opacity=(1-seg(p,0.05,0.16)).toFixed(2);
+    // скрим (только мобайл): цвет лёрпится тёмный->светлый, а сам гаснет, когда текста нет (чистый закат/рассвет)
+    if(scrim){ var sc=mix([18,40,64],[246,237,217],seg(p,0.40,0.56)); scrim.style.setProperty('--scrim', sc[0]+','+sc[1]+','+sc[2]); scrim.style.opacity=Math.max(hO,aO).toFixed(2); }
   }
   function onS(){ if(!raf) raf=requestAnimationFrame(upd); }
   addEventListener('scroll',onS,{passive:true}); addEventListener('resize',onS); upd();
