@@ -76,12 +76,15 @@ nav.main a:hover { opacity: 1; color: var(--amber); }
 header.site:not(.scrolled) .btn.contact { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
 
 /* хиро — закат-этикетка */
-#hero { position: relative; min-height: 100vh; display: flex; overflow: hidden; background: var(--ink); color: var(--cream); }
-#hero .scene, #hero .scrim { display: none; }
-#hero .scene svg { width: 100%; height: 100%; }
+#hero { position: relative; min-height: 100vh; display: flex; overflow: hidden; background: var(--blue-deep); color: var(--cream); }
+#hero .scene { position: absolute; inset: 0; z-index: 0; }
+#hero .scene svg { width: 100%; height: 100%; animation: heroDrift 28s ease-in-out infinite alternate; transform-origin: 64% 42%; }
+.hero-sun { transform-box: fill-box; transform-origin: center; animation: heroSun 7.5s ease-in-out infinite; }
+@keyframes heroDrift { from { transform: scale(1.04); } to { transform: scale(1.08) translate(-1.1%, -0.9%); } }
+@keyframes heroSun { 0%,100% { transform: translateY(0) scale(1); opacity: .94; } 50% { transform: translateY(-9px) scale(1.03); opacity: 1; } }
 #hero .scrim { position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(22,57,90,0.28) 0%, rgba(36,29,20,0) 34%, rgba(36,29,20,0.28) 70%, rgba(36,29,20,0.72) 100%); }
-#hero .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center;
+  background: linear-gradient(95deg, rgba(36,29,20,0.95) 0%, rgba(36,29,20,0.9) 30%, rgba(36,29,20,0.6) 48%, rgba(36,29,20,0.15) 70%, rgba(36,29,20,0) 90%), linear-gradient(180deg, rgba(36,29,20,0) 62%, rgba(36,29,20,0.5) 100%); }
+#hero .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end;
   padding-top: 120px; padding-bottom: 64px; min-height: 100vh; }
 #hero .k { color: var(--butter); margin-bottom: 18px; display: block; }
 #hero h1 { font-size: clamp(40px, 7vw, 92px); line-height: 0.98; letter-spacing: -0.02em; max-width: 15ch; color: var(--cream); }
@@ -219,7 +222,7 @@ body.is-ready #hero .cta { opacity: 1; transform: none; transition-delay: .58s; 
 body.is-ready #hero .scroll-hint { opacity: 1; transform: none; transition-delay: .74s; }
 html.js [data-rv] { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1); }
 html.js [data-rv].in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track{animation:none;}
+@media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track,#hero .scene svg,.hero-sun{animation:none!important;}
   html.js header.site .bar, html.js #hero .k, html.js #hero h1, html.js #hero .sub, html.js #hero .cta, html.js #hero .scroll-hint, html.js [data-rv]{opacity:1!important;transform:none!important;transition:none!important;} }
 
 /* адаптив */
@@ -257,7 +260,7 @@ html.js [data-rv].in { opacity: 1; transform: none; }
 </header>
 
 <section id="hero">
-  <div class="scene" aria-hidden="true"><svg viewBox="0 0 1000 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="1000" height="660" fill="#F4B63C"/><path d="M0 0.0 L38.5 2.6 L76.9 5.1 L115.4 7.2 L153.8 8.7 L192.3 9.7 L230.8 10.0 L269.2 9.6 L307.7 8.5 L346.2 6.8 L384.6 4.6 L423.1 2.2 L461.5 -0.5 L500.0 -3.1 L538.5 -5.5 L576.9 -7.5 L615.4 -9.0 L653.8 -9.8 L692.3 -10.0 L730.8 -9.4 L769.2 -8.2 L807.7 -6.4 L846.2 -4.2 L884.6 -1.7 L923.1 1.0 L961.5 3.5 L1000.0 5.9 L1000.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 132.0 L38.5 135.2 L76.9 138.1 L115.4 140.6 L153.8 142.5 L192.3 143.7 L230.8 144.0 L269.2 143.5 L307.7 142.2 L346.2 140.2 L384.6 137.6 L423.1 134.6 L461.5 131.4 L500.0 128.3 L538.5 125.4 L576.9 123.0 L615.4 121.2 L653.8 120.2 L692.3 120.0 L730.8 120.7 L769.2 122.1 L807.7 124.3 L846.2 126.9 L884.6 130.0 L923.1 133.2 L961.5 136.3 L1000.0 139.1 L1000.0 660.0 L0 660.0 Z" fill="#2B5E8E"/><path d="M0 224.4 L38.5 228.1 L76.9 231.5 L115.4 234.4 L153.8 236.6 L192.3 238.0 L230.8 238.4 L269.2 237.8 L307.7 236.3 L346.2 233.9 L384.6 230.9 L423.1 227.4 L461.5 223.7 L500.0 220.1 L538.5 216.7 L576.9 213.9 L615.4 211.9 L653.8 210.7 L692.3 210.4 L730.8 211.2 L769.2 212.9 L807.7 215.4 L846.2 218.5 L884.6 222.0 L923.1 225.8 L961.5 229.4 L1000.0 232.6 L1000.0 660.0 L0 660.0 Z" fill="#E1962B"/><circle cx="720.0" cy="264.0" r="56.1" fill="#F7DEA0"/><path d="M0 422.4 L0.0 422.4 L90.0 330.0 L170.0 389.4 L260.0 264.0 L350.0 363.0 L440.0 237.6 L540.0 349.8 L630.0 270.6 L730.0 376.2 L820.0 303.6 L910.0 389.4 L1000.0 330.0 L1000.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 528.0 L0.0 528.0 L110.0 448.8 L210.0 495.0 L330.0 402.6 L450.0 481.8 L560.0 389.4 L670.0 475.2 L790.0 415.8 L890.0 488.4 L1000.0 435.6 L1000.0 660.0 L0 660.0 Z" fill="#241D14"/><path d="M0 528.0 L0.0 528.0 L110.0 448.8 L210.0 495.0 L330.0 402.6 L450.0 481.8 L560.0 389.4 L670.0 475.2 L790.0 415.8 L890.0 488.4 L1000.0 435.6" fill="none" stroke="#F6EDD9" stroke-width="4.0" stroke-linejoin="round" opacity=".9"/></svg></div>
+  <div class="scene" aria-hidden="true"><svg viewBox="0 0 1000 660" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="1000" height="660" fill="#F4B63C"/><path d="M0 0.0 L38.5 2.6 L76.9 5.1 L115.4 7.2 L153.8 8.7 L192.3 9.7 L230.8 10.0 L269.2 9.6 L307.7 8.5 L346.2 6.8 L384.6 4.6 L423.1 2.2 L461.5 -0.5 L500.0 -3.1 L538.5 -5.5 L576.9 -7.5 L615.4 -9.0 L653.8 -9.8 L692.3 -10.0 L730.8 -9.4 L769.2 -8.2 L807.7 -6.4 L846.2 -4.2 L884.6 -1.7 L923.1 1.0 L961.5 3.5 L1000.0 5.9 L1000.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 132.0 L38.5 135.2 L76.9 138.1 L115.4 140.6 L153.8 142.5 L192.3 143.7 L230.8 144.0 L269.2 143.5 L307.7 142.2 L346.2 140.2 L384.6 137.6 L423.1 134.6 L461.5 131.4 L500.0 128.3 L538.5 125.4 L576.9 123.0 L615.4 121.2 L653.8 120.2 L692.3 120.0 L730.8 120.7 L769.2 122.1 L807.7 124.3 L846.2 126.9 L884.6 130.0 L923.1 133.2 L961.5 136.3 L1000.0 139.1 L1000.0 660.0 L0 660.0 Z" fill="#2B5E8E"/><path d="M0 224.4 L38.5 228.1 L76.9 231.5 L115.4 234.4 L153.8 236.6 L192.3 238.0 L230.8 238.4 L269.2 237.8 L307.7 236.3 L346.2 233.9 L384.6 230.9 L423.1 227.4 L461.5 223.7 L500.0 220.1 L538.5 216.7 L576.9 213.9 L615.4 211.9 L653.8 210.7 L692.3 210.4 L730.8 211.2 L769.2 212.9 L807.7 215.4 L846.2 218.5 L884.6 222.0 L923.1 225.8 L961.5 229.4 L1000.0 232.6 L1000.0 660.0 L0 660.0 Z" fill="#E1962B"/><circle class="hero-sun" cx="720.0" cy="264.0" r="56.1" fill="#F7DEA0"/><path d="M0 422.4 L0.0 422.4 L90.0 330.0 L170.0 389.4 L260.0 264.0 L350.0 363.0 L440.0 237.6 L540.0 349.8 L630.0 270.6 L730.0 376.2 L820.0 303.6 L910.0 389.4 L1000.0 330.0 L1000.0 660.0 L0 660.0 Z" fill="#16395A"/><path d="M0 528.0 L0.0 528.0 L110.0 448.8 L210.0 495.0 L330.0 402.6 L450.0 481.8 L560.0 389.4 L670.0 475.2 L790.0 415.8 L890.0 488.4 L1000.0 435.6 L1000.0 660.0 L0 660.0 Z" fill="#241D14"/><path d="M0 528.0 L0.0 528.0 L110.0 448.8 L210.0 495.0 L330.0 402.6 L450.0 481.8 L560.0 389.4 L670.0 475.2 L790.0 415.8 L890.0 488.4 L1000.0 435.6" fill="none" stroke="#F6EDD9" stroke-width="4.0" stroke-linejoin="round" opacity=".9"/></svg></div>
   <div class="scrim" aria-hidden="true"></div>
   <div class="wrap hero-inner">
     <span class="k">Группа компаний · Санкт-Петербург · с 1991 года</span>
