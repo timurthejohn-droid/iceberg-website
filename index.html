@@ -69,41 +69,46 @@ nav.main a:hover { opacity:1; color:var(--amber); }
 .btn.contact { padding:11px 20px; }
 header.site:not(.scrolled) .btn.contact { background:var(--yellow); border-color:var(--yellow); color:var(--ink); }
 
-/* ── HERO: чистый тёмный фон, слоган слева, горы+солнце справа ── */
-#hero { position:relative; min-height:100vh; overflow:hidden; background:var(--night); color:var(--cream); display:flex; }
-.sun { position:absolute; z-index:0; width:150px; height:150px; border-radius:50%; left:var(--sx,80%); top:var(--sy,80%); opacity:var(--so,1); transform:translate(-50%,-50%); background:radial-gradient(circle,#FDF0CE 0%,#F7DEA0 46%,rgba(247,222,160,0.5) 66%,rgba(247,222,160,0) 78%); }
-.hero-scrim { position:absolute; inset:0; z-index:1; background:linear-gradient(93deg, var(--night) 0%, var(--night) 40%, rgba(18,40,64,0.35) 60%, rgba(18,40,64,0) 78%); }
-.hero-mtns { position:absolute; right:0; bottom:0; width:60%; height:58vh; z-index:2; pointer-events:none; }
-.hero-mtns svg { width:100%; height:100%; }
-.hero-inner { position:relative; z-index:3; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:120px 0 64px; min-height:100vh; }
-#hero .k, #hero h1, #hero .sub, .hero-dirs { max-width:600px; }
-#hero .k { color:var(--butter); margin-bottom:18px; display:block; }
-#hero h1 { font-size:clamp(38px,5.6vw,80px); line-height:0.99; letter-spacing:-0.02em; color:var(--cream); }
-#hero h1 em { color:var(--yellow); }
-#hero .sub { margin-top:20px; max-width:42ch; font-size:clamp(15px,1.4vw,17px); color:rgba(246,237,217,0.85); }
+/* ══════════ SAGA: рассвет → день → закат (Hero + «О группе» в одном сюжете) ══════════ */
+.saga { position:relative; height:340vh; padding:0; background:var(--night); }
+.saga-anchor { position:absolute; top:42%; left:0; width:1px; height:1px; }
+.saga-sticky { position:sticky; top:0; height:100vh; overflow:hidden; }
+.saga-sky { position:absolute; inset:0; z-index:0; background:linear-gradient(180deg, var(--c-top,#122840) 0%, var(--c-mid,#16395A) 54%, var(--c-bot,#2E4670) 100%); }
+.saga-sun { position:absolute; z-index:1; width:172px; height:172px; border-radius:50%; left:var(--sx,82%); top:var(--sy,86%); opacity:var(--so,1); transform:translate(-50%,-50%); background:radial-gradient(circle,#FFF6DE 0%,#FCE9B8 38%,#F7DEA0 55%,rgba(247,222,160,0.42) 72%,rgba(247,222,160,0) 82%); will-change:left,top,opacity; }
+.saga-mtns { position:absolute; right:0; bottom:0; width:62%; height:60vh; z-index:2; pointer-events:none; }
+.saga-mtns svg { width:100%; height:100%; }
+.saga-stage { position:absolute; inset:0; z-index:3; display:grid; align-items:center; }
+.saga-stack { display:grid; }
+.saga-chapter { grid-area:1/1; align-self:center; max-width:600px; transition:none; }
+.ch-about { opacity:0; }
+
+.ch-hero .k { color:var(--butter); display:block; margin-bottom:18px; }
+.ch-hero h1 { font-size:clamp(38px,5.6vw,80px); line-height:0.99; letter-spacing:-0.02em; color:var(--cream); }
+.ch-hero h1 em { color:var(--yellow); }
+.ch-hero .sub { margin-top:20px; max-width:42ch; font-size:clamp(15px,1.4vw,17px); color:rgba(246,237,217,0.86); }
 .hero-dirs { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
-.hero-dirs .dir { display:flex; flex-direction:column; gap:3px; text-decoration:none; padding:12px 16px; border:1px solid var(--line-d); border-radius:8px; background:rgba(246,237,217,0.04); transition:background .2s,border-color .2s,transform .2s; }
-.hero-dirs .dir:hover { background:rgba(246,237,217,0.09); border-color:var(--yellow); transform:translateY(-2px); }
+.hero-dirs .dir { display:flex; flex-direction:column; gap:3px; text-decoration:none; padding:12px 16px; border:1px solid var(--line-d); border-radius:8px; background:rgba(246,237,217,0.06); transition:background .2s,border-color .2s,transform .2s; }
+.hero-dirs .dir:hover { background:rgba(246,237,217,0.12); border-color:var(--yellow); transform:translateY(-2px); }
 .hero-dirs .dir-k { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--butter); }
 .hero-dirs .dir-n { font-family:var(--disp); font-weight:600; font-size:16px; color:var(--cream); }
 .hero-dirs .dir-n b { color:var(--yellow); font-weight:700; }
-.scroll-hint { position:absolute; right:30px; bottom:34px; z-index:4; text-decoration:none; color:rgba(246,237,217,0.8); }
+
+.ch-about .k { color:var(--blue-deep); display:block; margin-bottom:16px; }
+.ch-about h2 { font-size:clamp(32px,4.6vw,58px); color:var(--ink); }
+.ch-about h2 em { color:var(--amber); }
+.ch-about p { margin-top:18px; font-size:clamp(16px,1.5vw,18px); color:#2B2213; max-width:46ch; }
+.about-facts { display:flex; flex-wrap:wrap; gap:26px 40px; margin-top:30px; padding-top:24px; border-top:1px solid rgba(36,29,20,0.28); }
+.about-facts > div { display:flex; flex-direction:column; gap:4px; }
+.about-facts b { font-family:var(--disp); font-weight:700; font-size:26px; color:var(--blue-deep); }
+.about-facts span { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#5A4E3A; }
+
+.saga .scroll-hint { position:absolute; right:32px; bottom:30px; z-index:4; text-decoration:none; color:rgba(246,237,217,0.85); }
+.saga .scroll-hint .k { color:inherit; }
 
 section { padding:clamp(84px,12vh,148px) 0; }
 .sec-head { margin-bottom:clamp(38px,6vw,68px); }
 .sec-head .k { display:block; margin-bottom:14px; }
 .sec-head h2 { font-size:clamp(32px,5vw,62px); max-width:18ch; }
-
-/* ── О ГРУППЕ ── */
-#about { background:var(--cream); color:var(--ink); }
-.about-grid { display:grid; grid-template-columns:0.9fr 1.1fr; gap:clamp(36px,5vw,80px); align-items:start; }
-.about-grid .k { display:block; margin-bottom:14px; }
-.about-grid h2 { font-size:clamp(30px,4vw,52px); }
-.about-text p { font-size:clamp(16px,1.5vw,18px); color:var(--muted); max-width:52ch; }
-.about-facts { display:flex; flex-wrap:wrap; gap:36px; margin-top:34px; padding-top:28px; border-top:1px solid var(--line); }
-.about-facts > div { display:flex; flex-direction:column; gap:4px; }
-.about-facts b { font-family:var(--disp); font-weight:700; font-size:26px; color:var(--blue); }
-.about-facts span { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
 
 /* ── ДЛЯ КОГО (вертикальные строки-ссылки) ── */
 #audience { background:var(--cream-2); color:var(--ink); }
@@ -220,23 +225,31 @@ html.js .ib-loader { display:flex; align-items:center; justify-content:center; p
 @keyframes ibFill { 0%{fill:#2B5E8E}25%{fill:#F4B63C}50%{fill:#E1962B}75%{fill:#16395A}100%{fill:#2B5E8E} }
 @keyframes ibStroke { 0%{stroke:#2B5E8E}25%{stroke:#F4B63C}50%{stroke:#E1962B}75%{stroke:#16395A}100%{stroke:#2B5E8E} }
 @keyframes ibPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
-html.js header.site .bar, html.js #hero .k, html.js #hero h1, html.js #hero .sub, html.js #hero .hero-dirs, html.js #hero .scroll-hint { opacity:0; transform:translateY(22px); transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1); }
+html.js header.site .bar, html.js .ch-hero .k, html.js .ch-hero h1, html.js .ch-hero .sub, html.js .ch-hero .hero-dirs, html.js .saga .scroll-hint { opacity:0; transform:translateY(22px); transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1); }
 body.is-ready header.site .bar { opacity:1; transform:none; transition-delay:0s; }
-body.is-ready #hero .k { opacity:1; transform:none; transition-delay:.14s; }
-body.is-ready #hero h1 { opacity:1; transform:none; transition-delay:.26s; }
-body.is-ready #hero .sub { opacity:1; transform:none; transition-delay:.44s; }
-body.is-ready #hero .hero-dirs { opacity:1; transform:none; transition-delay:.58s; }
-body.is-ready #hero .scroll-hint { opacity:1; transform:none; transition-delay:.74s; }
+body.is-ready .ch-hero .k { opacity:1; transform:none; transition-delay:.14s; }
+body.is-ready .ch-hero h1 { opacity:1; transform:none; transition-delay:.26s; }
+body.is-ready .ch-hero .sub { opacity:1; transform:none; transition-delay:.44s; }
+body.is-ready .ch-hero .hero-dirs { opacity:1; transform:none; transition-delay:.58s; }
+body.is-ready .saga .scroll-hint { opacity:1; transform:none; transition-delay:.74s; }
 html.js [data-rv] { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1); }
 html.js [data-rv].in { opacity:1; transform:none; }
 @media (prefers-reduced-motion: reduce) { html{scroll-behavior:auto;} .ib-loader .lo-badge,.lo-frame,.lo-frame2,.lo-mtn,.marquee .track,.slide-panel [class^="an-"]{animation:none!important;}
-  html.js header.site .bar, html.js #hero .k, html.js #hero h1, html.js #hero .sub, html.js #hero .hero-dirs, html.js #hero .scroll-hint, html.js [data-rv]{opacity:1!important;transform:none!important;transition:none!important;} }
+  html.js header.site .bar, html.js .ch-hero .k, html.js .ch-hero h1, html.js .ch-hero .sub, html.js .ch-hero .hero-dirs, html.js .saga .scroll-hint, html.js [data-rv]{opacity:1!important;transform:none!important;transition:none!important;} }
 
 @media (max-width: 899px) {
   .wrap { padding:0 20px; } nav.main { display:none; } .brand .brandmark { height:38px; }
-  #hero .hero-inner { padding-top:104px; max-width:none; }
-  .hero-mtns { width:100%; height:42vh; opacity:.9; } .hero-scrim { background:linear-gradient(180deg, rgba(18,40,64,0) 30%, var(--night) 82%); }
-  .about-grid { grid-template-columns:1fr; gap:24px; }
+  .saga { height:auto; padding:0; background:var(--night); }
+  .saga-sticky { position:static; height:auto; overflow:visible; padding:104px 0 64px; }
+  .saga-sky, .saga-sun, .saga-mtns, .saga-anchor { display:none; }
+  .saga .scroll-hint { display:none; }
+  .saga-stage { position:static; display:block; }
+  .saga-stack { display:block; }
+  .saga-chapter { grid-area:auto; align-self:auto; max-width:none; opacity:1 !important; }
+  .ch-about { margin-top:38px; background:var(--cream); color:var(--ink); border-radius:14px; padding:32px 22px; }
+  .ch-about p { color:var(--muted); }
+  .ch-about .about-facts { border-top-color:var(--line); }
+  .ch-about .about-facts span { color:var(--muted); }
   .aud-row { flex-direction:column; align-items:flex-start; gap:16px; } .aud-go { justify-content:flex-start; max-width:none; }
   .pin-grid { display:block; } .panel-col { margin-bottom:24px; } .panel-sticky { position:static; } .panel-viewport { height:60vh; }
   .slide-text { min-height:auto; opacity:1; padding:28px 0; border-top:1px solid var(--line); } .slide-text:first-child { border-top:none; }
@@ -250,7 +263,7 @@ html.js [data-rv].in { opacity:1; transform:none; }
 <div class="ib-loader" id="ibLoader" aria-hidden="true"><svg class="lo-badge" viewBox="0 0 210 76" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse class="lo-frame" cx="105" cy="38" rx="102" ry="33" fill="none" stroke="#2B5E8E" stroke-width="2.6"/><ellipse class="lo-frame2" cx="105" cy="38" rx="97" ry="28.5" fill="none" stroke="#2B5E8E" stroke-width="1" opacity=".5"/><path class="lo-mtn" d="M18 52 L33 24 L41 34 L47 27 L60 52 Z" fill="#2B5E8E"/><path d="M30.5 29.5 L33 24 L36 29 L34 31 L37.5 33 L28.5 35.5 Z" fill="#F6EDD9"/><text x="112" y="49" text-anchor="middle" font-family="Vollkorn,Georgia,serif" font-weight="700" font-style="italic" font-size="34" letter-spacing="-0.5" fill="#F4B63C" stroke="#241D14" stroke-width="1.1" style="paint-order:stroke fill">Iceberg</text></svg></div>
 
 <header class="site"><div class="wrap bar">
-  <a class="brand" href="#hero" aria-label="ICEBERG — на главную"><svg class="brandmark" viewBox="0 0 210 76" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Iceberg"><ellipse cx="105" cy="38" rx="102" ry="33" fill="none" stroke="currentColor" stroke-width="2.4"/><ellipse cx="105" cy="38" rx="97" ry="28.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M18 52 L33 24 L41 34 L47 27 L60 52 Z" fill="currentColor"/><path d="M30.5 29.5 L33 24 L36 29 L34 31 L37.5 33 L28.5 35.5 Z" fill="#F6EDD9"/><text x="112" y="49" text-anchor="middle" font-family="Vollkorn,Georgia,serif" font-weight="700" font-style="italic" font-size="34" letter-spacing="-0.5" fill="#F4B63C" stroke="#241D14" stroke-width="1.1" style="paint-order:stroke fill">Iceberg</text></svg></a>
+  <a class="brand" href="#saga" aria-label="ICEBERG — на главную"><svg class="brandmark" viewBox="0 0 210 76" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Iceberg"><ellipse cx="105" cy="38" rx="102" ry="33" fill="none" stroke="currentColor" stroke-width="2.4"/><ellipse cx="105" cy="38" rx="97" ry="28.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M18 52 L33 24 L41 34 L47 27 L60 52 Z" fill="currentColor"/><path d="M30.5 29.5 L33 24 L36 29 L34 31 L37.5 33 L28.5 35.5 Z" fill="#F6EDD9"/><text x="112" y="49" text-anchor="middle" font-family="Vollkorn,Georgia,serif" font-weight="700" font-style="italic" font-size="34" letter-spacing="-0.5" fill="#F4B63C" stroke="#241D14" stroke-width="1.1" style="paint-order:stroke fill">Iceberg</text></svg></a>
   <div class="nav-cluster">
     <nav class="main" aria-label="Основная навигация">
       <a href="#companies">Компании</a><a href="#about">О группе</a><a href="#audience">Для кого</a><a href="#contacts">Контакты</a>
@@ -259,37 +272,38 @@ html.js [data-rv].in { opacity:1; transform:none; }
   </div>
 </div></header>
 
-<section id="hero">
-  <div class="sun" id="heroSun" aria-hidden="true"></div>
-  <div class="hero-scrim" aria-hidden="true"></div>
-  <div class="hero-mtns" aria-hidden="true"><svg viewBox="0 0 820 520" width="100%" height="100%" preserveAspectRatio="xMaxYMax slice" xmlns="http://www.w3.org/2000/svg"><path d="M40 520 L150 250 L250 350 L360 180 L470 330 L560 220 L660 360 L740 240 L820 340 L820 520 Z" fill="#16395A"/><path d="M120 520 L250 300 L340 400 L470 250 L560 380 L680 280 L780 400 L820 360 L820 520 Z" fill="#241D14"/><path d="M120 520 L250 300 L340 400 L470 250 L560 380 L680 280 L780 400" fill="none" stroke="#F6EDD9" stroke-width="3" stroke-linejoin="round" opacity=".3"/></svg></div>
-  <div class="wrap hero-inner">
-    <span class="k">Группа компаний · Санкт-Петербург · с 1991 года</span>
-    <h1>Комплексные решения для <em>лёгкой промышленности</em></h1>
-    <p class="sub">Технические и эластичные ткани, спортивная одежда и контрактное производство — под одной крышей.</p>
-    <div class="hero-dirs">
-      <a class="dir" href="https://tkany.com" target="_blank" rel="noopener"><span class="dir-k">Технические ткани</span><span class="dir-n">Iceberg Tech <b>↗</b></span></a>
-      <a class="dir" href="https://biflex.tkany.com" target="_blank" rel="noopener"><span class="dir-k">Эластичные ткани</span><span class="dir-n">Iceberg Biflex <b>↗</b></span></a>
-      <a class="dir" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener"><span class="dir-k">Производство</span><span class="dir-n">Iceberg Factory <b>↗</b></span></a>
-    </div>
-  </div>
-  <a class="scroll-hint" href="#about" aria-label="Листайте вниз"><span class="k">Листайте вниз ↓</span></a>
-</section>
-
-<section id="about">
-  <div class="wrap about-grid">
-    <div><span class="k">О группе</span><h2>Тридцать лет <em>на совесть</em></h2></div>
-    <div class="about-text">
-      <p>«Айсберг» — группа компаний из Санкт-Петербурга. С 1991 года мы производим и поставляем ткани
-      и одежду по всей России: технические и эластичные полотна, контрактный пошив и собственный бренд.
-      За тридцать с лишним лет выросли из первого склада в группу с собственным производством — и остались
-      теми же: работаем по-человечески, надёжно и вдолгую.</p>
-      <div class="about-facts">
-        <div><b>1991</b><span>год основания</span></div>
-        <div><b>Санкт-Петербург</b><span>склад и производство</span></div>
-        <div><b>Вся Россия</b><span>поставки и доставка</span></div>
+<section id="saga" class="saga">
+  <span class="saga-anchor" id="about" aria-hidden="true"></span>
+  <div class="saga-sticky">
+    <div class="saga-sky" id="sagaSky" aria-hidden="true"></div>
+    <div class="saga-sun" id="sagaSun" aria-hidden="true"></div>
+    <div class="saga-mtns" aria-hidden="true"><svg viewBox="0 0 820 520" width="100%" height="100%" preserveAspectRatio="xMaxYMax slice" xmlns="http://www.w3.org/2000/svg"><path d="M40 520 L150 250 L250 350 L360 180 L470 330 L560 220 L660 360 L740 240 L820 340 L820 520 Z" fill="#16395A"/><path d="M120 520 L250 300 L340 400 L470 250 L560 380 L680 280 L780 400 L820 360 L820 520 Z" fill="#241D14"/><path d="M120 520 L250 300 L340 400 L470 250 L560 380 L680 280 L780 400" fill="none" stroke="#F6EDD9" stroke-width="3" stroke-linejoin="round" opacity=".32"/></svg></div>
+    <div class="saga-stage"><div class="wrap"><div class="saga-stack">
+      <div class="saga-chapter ch-hero" id="chHero">
+        <span class="k">Группа компаний · Санкт-Петербург · с 1991 года</span>
+        <h1>Комплексные решения для <em>лёгкой промышленности</em></h1>
+        <p class="sub">Технические и эластичные ткани, спортивная одежда и контрактное производство — под одной крышей.</p>
+        <div class="hero-dirs">
+          <a class="dir" href="https://tkany.com" target="_blank" rel="noopener"><span class="dir-k">Технические ткани</span><span class="dir-n">Iceberg Tech <b>↗</b></span></a>
+          <a class="dir" href="https://biflex.tkany.com" target="_blank" rel="noopener"><span class="dir-k">Эластичные ткани</span><span class="dir-n">Iceberg Biflex <b>↗</b></span></a>
+          <a class="dir" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/" target="_blank" rel="noopener"><span class="dir-k">Производство</span><span class="dir-n">Iceberg Factory <b>↗</b></span></a>
+        </div>
       </div>
-    </div>
+      <div class="saga-chapter ch-about" id="chAbout">
+        <span class="k">О группе</span>
+        <h2>Тридцать лет <em>на совесть</em></h2>
+        <p>«Айсберг» — группа компаний из Санкт-Петербурга. С 1991 года мы производим и поставляем ткани
+        и одежду по всей России: технические и эластичные полотна, контрактный пошив и собственный бренд.
+        За тридцать с лишним лет выросли из первого склада в группу с собственным производством — и остались
+        теми же: работаем по-человечески, надёжно и вдолгую.</p>
+        <div class="about-facts">
+          <div><b>1991</b><span>год основания</span></div>
+          <div><b>Санкт-Петербург</b><span>склад и производство</span></div>
+          <div><b>Вся Россия</b><span>поставки и доставка</span></div>
+        </div>
+      </div>
+    </div></div></div>
+    <a class="scroll-hint" id="sagaHint" href="#audience" aria-label="Листайте вниз"><span class="k">Листайте вниз ↓</span></a>
   </div>
 </section>
 
@@ -428,7 +442,7 @@ html.js [data-rv].in { opacity:1; transform:none; }
 
 <footer class="site"><div class="wrap">
   <div class="foot">
-    <a class="brand" href="#hero" aria-label="ICEBERG"><svg class="brandmark" viewBox="0 0 210 76" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Iceberg"><ellipse cx="105" cy="38" rx="102" ry="33" fill="none" stroke="currentColor" stroke-width="2.4"/><ellipse cx="105" cy="38" rx="97" ry="28.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M18 52 L33 24 L41 34 L47 27 L60 52 Z" fill="currentColor"/><path d="M30.5 29.5 L33 24 L36 29 L34 31 L37.5 33 L28.5 35.5 Z" fill="#F6EDD9"/><text x="112" y="49" text-anchor="middle" font-family="Vollkorn,Georgia,serif" font-weight="700" font-style="italic" font-size="34" letter-spacing="-0.5" fill="#F4B63C" stroke="#241D14" stroke-width="1.1" style="paint-order:stroke fill">Iceberg</text></svg><span class="wm-sub">Группа компаний</span></a>
+    <a class="brand" href="#saga" aria-label="ICEBERG"><svg class="brandmark" viewBox="0 0 210 76" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Iceberg"><ellipse cx="105" cy="38" rx="102" ry="33" fill="none" stroke="currentColor" stroke-width="2.4"/><ellipse cx="105" cy="38" rx="97" ry="28.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M18 52 L33 24 L41 34 L47 27 L60 52 Z" fill="currentColor"/><path d="M30.5 29.5 L33 24 L36 29 L34 31 L37.5 33 L28.5 35.5 Z" fill="#F6EDD9"/><text x="112" y="49" text-anchor="middle" font-family="Vollkorn,Georgia,serif" font-weight="700" font-style="italic" font-size="34" letter-spacing="-0.5" fill="#F4B63C" stroke="#241D14" stroke-width="1.1" style="paint-order:stroke fill">Iceberg</text></svg><span class="wm-sub">Группа компаний</span></a>
     <div class="col"><span class="k">Наши компании</span>
       <a href="https://tkany.com" target="_blank" rel="noopener">Iceberg Tech <span class="mono">tkany.com</span></a>
       <a href="https://biflex.tkany.com" target="_blank" rel="noopener">Iceberg Biflex <span class="mono">biflex.tkany.com</span></a>
@@ -437,24 +451,64 @@ html.js [data-rv].in { opacity:1; transform:none; }
     <div class="col"><span class="k">Разделы</span><a href="#about">О группе</a><a href="#audience">Для кого</a><a href="#companies">Компании</a><a href="#contacts">Контакты</a></div>
     <div class="col"><span class="k">Контакты</span><a href="tel:+78123256993">+7 (812) 325-69-93</a><a href="mailto:iceberg@iceberg.spb.ru">iceberg@iceberg.spb.ru</a><a href="#contacts">СПб, Домостроительная 16М</a></div>
   </div>
-  <div class="copy"><span>© 1991–2026 Группа компаний «Айсберг»</span><span>дизайн-прототип · v7</span></div>
+  <div class="copy"><span>© 1991–2026 Группа компаний «Айсберг»</span><span>дизайн-прототип · v8</span></div>
 </div></footer>
 
 <script>
 // nav scrolled
 (function(){var h=document.querySelector('header.site');if(!h)return;function s(){h.classList.toggle('scrolled', window.scrollY > window.innerHeight*0.7);}addEventListener('scroll',s,{passive:true});addEventListener('resize',s);s();})();
 
-// hero: солнце по дуге (восход справа -> зенит -> закат слева, гаснет) — только в пределах hero
+// SAGA: рассвет -> день -> закат сквозь hero + «о группе» (солнце по дуге, небо лёрпится, текст кросс-фейдится)
 (function(){
-  var sun=document.getElementById('heroSun'), hero=document.getElementById('hero');
-  if(!sun||!hero) return;
+  var saga=document.getElementById('saga'); if(!saga) return;
+  var sky=document.getElementById('sagaSky'), sun=document.getElementById('sagaSun');
+  var chHero=document.getElementById('chHero'), chAbout=document.getElementById('chAbout'), hint=document.getElementById('sagaHint');
+  if(!sky||!sun||!chHero||!chAbout) return;
+  // небо: ночь -> рассвет -> день (светло) -> золото -> закат
+  var K=[
+    {p:0.00, t:[18,40,64],   m:[22,57,90],    b:[46,74,112]},
+    {p:0.14, t:[32,54,86],   m:[74,92,120],   b:[201,132,72]},
+    {p:0.52, t:[150,190,222], m:[206,226,238], b:[244,237,220]},
+    {p:0.85, t:[92,112,150], m:[228,162,92],  b:[240,192,116]},
+    {p:1.00, t:[16,28,50],   m:[52,52,92],    b:[150,72,60]}
+  ];
+  // траектория солнца: восход справа из-за гор -> держится высоко над текстом (день) -> уходит вниз-влево (закат)
+  var SUN=[
+    {p:0.00, x:82, y:88},
+    {p:0.10, x:74, y:58},
+    {p:0.35, x:56, y:20},
+    {p:0.55, x:48, y:15},
+    {p:0.70, x:40, y:20},
+    {p:0.82, x:30, y:47},
+    {p:1.00, x:12, y:92}
+  ];
+  function lp(a,b,t){return Math.round(a+(b-a)*t);}
+  function mix(a,b,t){return [lp(a[0],b[0],t),lp(a[1],b[1],t),lp(a[2],b[2],t)];}
+  function rgb(c){return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
+  function skyAt(p){
+    for(var i=0;i<K.length-1;i++){ if(p<=K[i+1].p){ var a=K[i],b=K[i+1],t=(p-a.p)/(b.p-a.p);
+      return {t:mix(a.t,b.t,t), m:mix(a.m,b.m,t), b:mix(a.b,b.b,t)}; } }
+    var L=K[K.length-1]; return {t:L.t,m:L.m,b:L.b};
+  }
+  function sunAt(p){
+    for(var i=0;i<SUN.length-1;i++){ if(p<=SUN[i+1].p){ var a=SUN[i],b=SUN[i+1],t=(p-a.p)/(b.p-a.p);
+      return {x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t}; } }
+    var L=SUN[SUN.length-1]; return {x:L.x,y:L.y};
+  }
+  function seg(p,a,b){return Math.min(1,Math.max(0,(p-a)/(b-a)));}
   var raf=0;
   function upd(){ raf=0;
-    var hh=hero.offsetHeight||window.innerHeight;
-    var p=Math.min(1,Math.max(0, window.scrollY/(hh*0.9)));
-    var x=82-54*p, y=82-66*Math.sin(p*Math.PI);
-    var o=p<0.5?1:Math.max(0.12,1-(p-0.5)*1.8);
-    sun.style.setProperty('--sx',x+'%'); sun.style.setProperty('--sy',y+'%'); sun.style.setProperty('--so',o.toFixed(2));
+    var top=saga.offsetTop, h=saga.offsetHeight-window.innerHeight;
+    var p=h>0?Math.min(1,Math.max(0,(window.scrollY-top)/h)):0;
+    var s=skyAt(p);
+    sky.style.setProperty('--c-top',rgb(s.t)); sky.style.setProperty('--c-mid',rgb(s.m)); sky.style.setProperty('--c-bot',rgb(s.b));
+    var sp=sunAt(p);
+    var o = p<0.05 ? p/0.05 : (p>0.9 ? Math.max(0,1-(p-0.9)/0.1) : 1);
+    sun.style.left=sp.x+'%'; sun.style.top=sp.y+'%'; sun.style.opacity=o.toFixed(2);
+    // слоган -> о компании; о компании гаснет ДО того, как солнце спустится в левую (текстовую) зону
+    chHero.style.opacity=(1-seg(p,0.28,0.44)).toFixed(2);
+    chAbout.style.opacity=(seg(p,0.44,0.55)*(1-seg(p,0.68,0.76))).toFixed(2);
+    if(hint) hint.style.opacity=(1-seg(p,0.05,0.16)).toFixed(2);
   }
   function onS(){ if(!raf) raf=requestAnimationFrame(upd); }
   addEventListener('scroll',onS,{passive:true}); addEventListener('resize',onS); upd();
@@ -477,7 +531,7 @@ html.js [data-rv].in { opacity:1; transform:none; }
 (function(){
   var loader=document.getElementById('ibLoader');
   function reveal(){ document.body.classList.add('is-ready'); }
-  function setup(){ var sel='#about .about-text, #audience .aud-row, #numbers .lede, #numbers .stat, #clients .k, #contacts .con-grid > *';
+  function setup(){ var sel='#audience .aud-row, #numbers .lede, #numbers .stat, #clients .k, #contacts .con-grid > *';
     var els=document.querySelectorAll(sel);
     if(!('IntersectionObserver' in window)){ for(var i=0;i<els.length;i++) els[i].classList.add('in'); return; }
     var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
