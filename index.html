@@ -76,12 +76,12 @@ nav.main a:hover { opacity: 1; color: var(--amber); }
 header.site:not(.scrolled) .btn.contact { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
 
 /* хиро — закат-этикетка */
-#hero { position: relative; min-height: 100vh; display: flex; overflow: hidden; background: var(--blue-deep); color: var(--cream); }
-#hero .scene { position: absolute; inset: 0; z-index: 0; }
+#hero { position: relative; min-height: 100vh; display: flex; overflow: hidden; background: var(--ink); color: var(--cream); }
+#hero .scene, #hero .scrim { display: none; }
 #hero .scene svg { width: 100%; height: 100%; }
 #hero .scrim { position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(180deg, rgba(22,57,90,0.28) 0%, rgba(36,29,20,0) 34%, rgba(36,29,20,0.28) 70%, rgba(36,29,20,0.72) 100%); }
-#hero .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end;
+#hero .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center;
   padding-top: 120px; padding-bottom: 64px; min-height: 100vh; }
 #hero .k { color: var(--butter); margin-bottom: 18px; display: block; }
 #hero h1 { font-size: clamp(40px, 7vw, 92px); line-height: 0.98; letter-spacing: -0.02em; max-width: 15ch; color: var(--cream); }
@@ -261,7 +261,7 @@ html.js [data-rv].in { opacity: 1; transform: none; }
   <div class="scrim" aria-hidden="true"></div>
   <div class="wrap hero-inner">
     <span class="k">Группа компаний · Санкт-Петербург · с 1991 года</span>
-    <h1>Ткани и одежда, <em>сделанные на совесть</em></h1>
+    <h1>Комплексные решения для <em>лёгкой промышленности</em></h1>
     <p class="sub">Поставляем технические и эластичные ткани, производим спортивную одежду
       и помогаем брендам создавать качественную текстильную продукцию — уже больше 30 лет.</p>
     <div class="cta">
