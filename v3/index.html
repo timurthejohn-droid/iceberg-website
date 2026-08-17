@@ -305,11 +305,13 @@ html.js [data-rv].in{opacity:1;transform:none;}
 /* единый однорядный хедер везде: верхнюю тёмную полоску убираем */
 .topbar{display:none!important}
 :root{--head-h:76px}
-/* тёмная шапка на главной (выбор клиента): тёмный фон, белый логотип/меню/телефон, зелёная кнопка */
+/* единый хедер везде: тёмное матовое стекло (не плоский синий), белый логотип/меню/телефон, зелёная кнопка */
 header.site{background:transparent}
-.navbar{background:#0B1D2E!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  border-bottom:1px solid rgba(255,255,255,.10)!important;box-shadow:none!important}
-.navbar .brandmark{filter:invert(1)}
+.navbar{background:rgba(11,22,35,.82)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(125%)!important;backdrop-filter:blur(20px) saturate(125%)!important;
+  border-bottom:1px solid rgba(255,255,255,.10)!important;box-shadow:0 10px 30px -22px rgba(0,0,0,.7)!important}
+/* бейдж — тёмные штрихи на прозрачном: brightness(0)+invert даёт чистый белый знак (plain invert оставлял буквы грязно-серыми) */
+.navbar .brandmark{filter:brightness(0) invert(1)}
 .navbar .burger{color:#fff}
 .navbar .burger:hover{color:#8FC7A6}
 .navbar .nav-tel,.navbar .nav-tel .tel-num{color:#fff!important}
