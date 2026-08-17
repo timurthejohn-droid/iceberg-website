@@ -56,8 +56,8 @@ header.site{position:sticky;top:0;z-index:100}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.navbar{background:#0B1524}}
 .navbar-in{display:flex;align-items:center;gap:26px;height:76px}
 .brandmark{display:block;height:46px;width:auto}
-/* бейдж — тёмные штрихи на прозрачном: brightness(0)+invert даёт чистый белый знак */
-.navbar .brandmark{filter:brightness(0) invert(1)}
+/* бейдж в хедере — тот же приём, что в подвале (footer .brandmark): invert(1) */
+.navbar .brandmark{filter:invert(1)}
 .navbar .main{display:flex;align-items:center;gap:26px;margin-left:8px}
 .navbar .main>a,.navbar .main .msub-top{font-family:var(--display);font-weight:500;
   font-size:15px;color:var(--ink);white-space:nowrap;transition:color .15s}
