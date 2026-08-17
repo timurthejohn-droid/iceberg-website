@@ -305,6 +305,24 @@ html.js [data-rv].in{opacity:1;transform:none;}
 /* единый однорядный хедер везде: верхнюю тёмную полоску убираем */
 .topbar{display:none!important}
 :root{--head-h:76px}
+/* тёмная шапка на главной (выбор клиента): тёмный фон, белый логотип/меню/телефон, зелёная кнопка */
+header.site{background:transparent}
+.navbar{background:#0B1D2E!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  border-bottom:1px solid rgba(255,255,255,.10)!important;box-shadow:none!important}
+.navbar .brandmark{filter:invert(1)}
+.navbar .burger{color:#fff}
+.navbar .burger:hover{color:#8FC7A6}
+.navbar .nav-tel,.navbar .nav-tel .tel-num{color:#fff!important}
+.navbar .nav-tel svg,.navbar .tel-ic{color:#8FC7A6!important}
+.navbar .nav-right .btn{background:#1F5C42!important;border-color:#1F5C42!important;color:#fff!important;
+  transition:background .2s,transform .2s,box-shadow .2s}
+.navbar .nav-right .btn:hover{background:#164632!important;transform:translateY(-1px);
+  box-shadow:0 10px 22px -12px rgba(31,92,66,.9)}
+/* бургер: полоски сжимаются на ховер */
+.burger__i i{transform-origin:center;transition:transform .25s ease}
+.burger:hover .burger__i i:nth-child(1){transform:translateY(3px)}
+.burger:hover .burger__i i:nth-child(2){transform:scaleX(.5)}
+.burger:hover .burger__i i:nth-child(3){transform:translateY(-3px)}
 .burger{display:inline-flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;
   font-family:var(--display,'Manrope',system-ui);font-weight:600;font-size:15px;color:var(--ink);padding:8px 2px;line-height:1}
 .burger__i{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:22px;height:14px}
