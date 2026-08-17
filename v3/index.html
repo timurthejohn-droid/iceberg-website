@@ -302,6 +302,9 @@ html.js [data-rv].in{opacity:1;transform:none;}
 
 /* ——— бургер «Меню» + полноэкранный оверлей навигации ——— */
 .navbar .main{display:none!important}
+/* единый однорядный хедер везде: верхнюю тёмную полоску убираем */
+.topbar{display:none!important}
+:root{--head-h:76px}
 .burger{display:inline-flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;
   font-family:var(--display,'Manrope',system-ui);font-weight:600;font-size:15px;color:var(--ink);padding:8px 2px;line-height:1}
 .burger__i{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:22px;height:14px}
