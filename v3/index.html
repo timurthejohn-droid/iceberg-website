@@ -300,6 +300,40 @@ html.js [data-rv].in{opacity:1;transform:none;}
 .navbar .main .msub a span{font-family:var(--sans);font-weight:400;font-size:12px;color:var(--muted)}
 .navbar .main .msub a:hover{background:rgba(18,37,60,.06)}
 
+/* ——— бургер «Меню» + полноэкранный оверлей навигации ——— */
+.navbar .main{display:none!important}
+.burger{display:inline-flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;
+  font-family:var(--display,'Manrope',system-ui);font-weight:600;font-size:15px;color:var(--ink);padding:8px 2px;line-height:1}
+.burger__i{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:22px;height:14px}
+.burger__i i{height:2px;width:100%;background:currentColor;border-radius:2px}
+.mnav{position:fixed;inset:0;z-index:2000;background:#0B1D2E;color:#fff;
+  padding:clamp(72px,10vh,120px) var(--edge) clamp(30px,6vw,70px);
+  display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,4vw,50px);
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .3s ease,visibility .3s,transform .3s ease;overflow-y:auto}
+.mnav.is-open{opacity:1;visibility:visible;transform:none}
+.mnav__close{position:absolute;top:22px;right:var(--edge);width:46px;height:46px;background:none;border:0;cursor:pointer}
+.mnav__close span{position:absolute;left:9px;top:22px;width:28px;height:2px;background:#fff;border-radius:2px}
+.mnav__close span:first-child{transform:rotate(45deg)}
+.mnav__close span:last-child{transform:rotate(-45deg)}
+.mnav__inner{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(22px,4vw,56px);
+  max-width:var(--wrap);margin:0 auto;width:100%}
+.mnav__col{display:flex;flex-direction:column;gap:13px;align-items:flex-start}
+.mnav__h{font-family:var(--mono,'IBM Plex Mono',monospace);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:6px}
+.mnav__col a{color:#fff;text-decoration:none;font-family:var(--display,'Manrope',system-ui);font-weight:300;
+  font-size:clamp(20px,1.9vw,26px);letter-spacing:-.02em;line-height:1.18;transition:color .15s}
+.mnav__col a:hover{color:#F4B63C}
+.mnav__foot a{text-decoration:none}
+.mnav__col a i{display:block;font-family:var(--mono,'IBM Plex Mono',monospace);font-style:normal;
+  font-size:11.5px;color:rgba(255,255,255,.4);letter-spacing:.02em;margin-top:3px}
+.mnav__foot{display:flex;flex-wrap:wrap;gap:10px 26px;max-width:var(--wrap);margin:0 auto;width:100%;
+  padding-top:22px;border-top:1px solid rgba(255,255,255,.14);font-size:14px;color:rgba(255,255,255,.6)}
+.mnav__foot a{color:#fff}
+body.mnav-open{overflow:hidden}
+@media(max-width:760px){.mnav__inner{grid-template-columns:1fr;gap:22px}
+  .mnav{justify-content:flex-start}.mnav__col a{font-size:20px}}
+
 /* ——— первый экран: секвенция кадров по скроллу ——— */
 /* padding:0 обязателен — общее правило для section даёт 9vh сверху и отрывает
    прилипающий экран от шапки */
@@ -424,7 +458,7 @@ footer .brandmark{filter:invert(1)}
 
 <header class="site" id="top">
   <div class="topbar"><div class="wrap topbar-in">
-    <nav class="top-links"><a href="shveinoe-proizvodstvo/">Производство</a><a href="tkani-optom/">Ткани оптом</a><a href="vacancy/">Вакансии</a></nav>
+    <span class="top-tag-l">Группа компаний ICEBERG</span>
     <span class="top-tag">Ткани и производство · с 1991 года</span>
     <a href="contacts/">Контакты · Санкт-Петербург</a>
   </div></div>
@@ -433,12 +467,36 @@ footer .brandmark{filter:invert(1)}
     <nav class="main" aria-label="Основная навигация">
       <div class="msub-wrap"><a href="#companies" class="msub-top" aria-haspopup="true">Компании</a><div class="msub" role="menu"><a href="https://tkany.com" target="_blank" rel="noopener">Iceberg Tech<span>технические ткани · tkany.com</span></a><a href="https://biflex.tkany.com" target="_blank" rel="noopener">Iceberg Biflex<span>эластичные ткани · biflex.tkany.com</span></a><a href="shveinoe-proizvodstvo/">Iceberg Factory<span>контрактный пошив</span></a><a href="https://emdi.ru" target="_blank" rel="noopener">EMDI<span>бренд одежды · emdi.ru</span></a></div></div><a href="shveinoe-proizvodstvo/">Производство</a><a href="tkani-optom/">Ткани оптом</a><a href="#about">О группе</a><a href="vacancy/">Вакансии</a><a href="contacts/">Контакты</a>
     </nav>
-    <div class="nav-right">
+    <div class="nav-right"><button class="burger" id="burgerBtn" aria-expanded="false" aria-controls="mnav"><span>Меню</span><span class="burger__i"><i></i><i></i><i></i></span></button>
       <a class="nav-tel" href="tel:+78123256993" aria-label="Позвонить"><svg class="tel-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg><span class="tel-num">+7 (812) 325-69-93</span></a>
       <a class="btn" href="#contacts">Связаться</a>
     </div>
   </div></div>
 </header>
+<div class="mnav" id="mnav" aria-hidden="true">
+  <button class="mnav__close" id="mnavClose" aria-label="Закрыть меню"><span></span><span></span></button>
+  <div class="mnav__inner">
+    <div class="mnav__col"><span class="mnav__h">Навигация</span>
+      <a href="#top">Главная</a><a href="#about">О группе</a><a href="tkani-optom/">Ткани оптом</a><a href="#contacts">Контакты</a><a href="vacancy/">Вакансии</a></div>
+    <div class="mnav__col"><span class="mnav__h">Производство</span>
+      <a href="shveinoe-proizvodstvo/">Швейное производство</a><a href="izgotovlenie-kupalnikov-i-sportivnoi-odezhdi/">Купальники и спортивная одежда</a><a href="izgotovlenie-startovykh-maek/">Стартовые майки</a><a href="mashinnaya-vishivka/">Машинная вышивка</a><a href="tkani-print/">Печать на ткани</a></div>
+    <div class="mnav__col"><span class="mnav__h">Компании группы</span>
+      <a href="https://tkany.com" target="_blank" rel="noopener">Iceberg Tech <i>технические ткани · tkany.com ↗</i></a><a href="https://biflex.tkany.com" target="_blank" rel="noopener">Iceberg Biflex <i>эластичные ткани · biflex.tkany.com ↗</i></a><a href="shveinoe-proizvodstvo/">Iceberg Factory <i>контрактное производство</i></a><a href="https://emdi.ru" target="_blank" rel="noopener">EMDI <i>бренд одежды · emdi.ru ↗</i></a></div>
+  </div>
+  <div class="mnav__foot"><a href="tel:+78123256993">+7 (812) 325-69-93</a><a href="mailto:iceberg@iceberg.spb.ru">iceberg@iceberg.spb.ru</a><span>Санкт-Петербург, ул. Домостроительная, 16М</span></div>
+</div>
+<script>
+(function(){
+  var b=document.getElementById('burgerBtn'),m=document.getElementById('mnav'),c=document.getElementById('mnavClose');
+  if(!b||!m)return;
+  function set(o){m.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');
+    m.setAttribute('aria-hidden',o?'false':'true');document.body.classList.toggle('mnav-open',o);}
+  b.addEventListener('click',function(){set(!m.classList.contains('is-open'));});
+  if(c)c.addEventListener('click',function(){set(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false);});
+  m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){set(false);});});
+})();
+</script>
 
 <section class="hero-track" id="hero">
   <div class="hero-sticky">
