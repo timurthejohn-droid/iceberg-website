@@ -1,0 +1,649 @@
+<title>Переезд iceberg.spb.ru</title>
+<meta name="description" content="Инструкция по переносу сайта: склейка, редиректы, robots.txt, порядок переключения и проверка.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Vollkorn:ital,wght@1,600&display=swap">
+
+<style>
+:root{
+  --ground:#ffffff;
+  --paper:#f4f7f9;
+  --paper-2:#eaf0f4;
+  --ink:#0a0c0e;
+  --ink-soft:#3a4148;
+  --mut:#5d6a75;
+  --rule:#dce3e9;
+  --rule-soft:#e9eef2;
+  --brand:#123e63;
+  --brand-2:#2b6fa4;
+  --wash:#eaf3f9;
+  --ok:#1f5c42;
+  --ok-wash:#e9f3ee;
+  --warn:#8f2433;
+  --warn-wash:#f9eaed;
+  --shadow:0 1px 2px rgba(11,29,46,.05),0 8px 24px -16px rgba(11,29,46,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0b1116;
+    --paper:#111a21;
+    --paper-2:#16222b;
+    --ink:#e9eef2;
+    --ink-soft:#c2ccd4;
+    --mut:#93a2ae;
+    --rule:#24333f;
+    --rule-soft:#1b2831;
+    --brand:#8fc0df;
+    --brand-2:#a9d2ea;
+    --wash:#13222d;
+    --ok:#7cc4a3;
+    --ok-wash:#12241d;
+    --warn:#e79aa6;
+    --warn-wash:#2a161b;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0b1116;
+  --paper:#111a21;
+  --paper-2:#16222b;
+  --ink:#e9eef2;
+  --ink-soft:#c2ccd4;
+  --mut:#93a2ae;
+  --rule:#24333f;
+  --rule-soft:#1b2831;
+  --brand:#8fc0df;
+  --brand-2:#a9d2ea;
+  --wash:#13222d;
+  --ok:#7cc4a3;
+  --ok-wash:#12241d;
+  --warn:#e79aa6;
+  --warn-wash:#2a161b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Golos Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:16.5px;
+  line-height:1.62;
+  font-feature-settings:"liga" 1;
+}
+h1,h2,h3,h4{
+  font-family:Manrope,"Segoe UI",system-ui,sans-serif;
+  font-weight:300;
+  letter-spacing:-.03em;
+  line-height:1.04;
+  text-wrap:balance;
+  margin:0;
+}
+h1 em,h2 em{font-family:Vollkorn,Georgia,serif;font-style:italic;font-weight:600;letter-spacing:-.01em}
+a{color:var(--brand-2);text-decoration-thickness:1px;text-underline-offset:2px}
+a:hover{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;border-radius:3px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.86em;font-variant-numeric:tabular-nums}
+code{background:var(--paper-2);padding:.12em .38em;border-radius:4px;color:var(--ink-soft);word-break:break-word}
+
+/* ---------- каркас ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+.layout{display:grid;grid-template-columns:232px minmax(0,1fr);gap:56px;align-items:start}
+@media (max-width:940px){.layout{grid-template-columns:1fr;gap:0}}
+
+/* ---------- шапка ---------- */
+.masthead{border-bottom:1px solid var(--rule);margin-bottom:44px;padding:52px 0 34px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--mut);margin:0 0 18px
+}
+.masthead h1{font-size:clamp(34px,6.2vw,58px);max-width:16ch}
+.masthead .lede{
+  margin:22px 0 0;max-width:62ch;font-size:18px;color:var(--ink-soft)
+}
+.meta{
+  display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:26px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--mut)
+}
+.meta b{font-weight:500;color:var(--ink-soft)}
+
+/* ---------- содержание ---------- */
+.toc{position:sticky;top:28px}
+@media (max-width:940px){
+  .toc{position:static;margin:0 0 44px;padding:20px 22px;background:var(--paper);border-radius:12px}
+}
+.toc h2{font-size:11.5px;font-family:"IBM Plex Mono",monospace;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mut);font-weight:400;margin-bottom:14px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:t}
+.toc a{
+  display:flex;gap:10px;padding:6px 0;color:var(--ink-soft);text-decoration:none;
+  font-size:14.5px;line-height:1.35;border-bottom:1px solid transparent
+}
+.toc a:hover{color:var(--brand-2)}
+.toc a span{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--mut);padding-top:2px;min-width:16px}
+
+/* ---------- секции ---------- */
+section{scroll-margin-top:24px;padding-top:8px}
+section+section{margin-top:64px}
+section>h2{
+  font-size:clamp(24px,3.4vw,34px);padding-bottom:14px;border-bottom:1px solid var(--rule);
+  margin-bottom:26px;display:flex;align-items:baseline;gap:14px
+}
+section>h2 .n{
+  font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.06em;
+  color:var(--brand);font-weight:500;flex:none
+}
+h3{font-size:19px;font-weight:500;letter-spacing:-.02em;margin:34px 0 10px}
+p{margin:0 0 16px;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:22px;margin:0 0 18px}
+li{margin:0 0 8px}
+li::marker{color:var(--mut)}
+strong{font-weight:600}
+
+/* ---------- карточки-плитки ---------- */
+.grid{display:grid;gap:14px;margin:0 0 20px}
+.grid--3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.tile{
+  background:var(--paper);border:1px solid var(--rule-soft);border-radius:12px;padding:18px 20px
+}
+.tile .k{font-family:Manrope,sans-serif;font-size:30px;font-weight:300;letter-spacing:-.03em;
+  color:var(--brand);font-variant-numeric:tabular-nums;line-height:1}
+.tile .l{font-size:13.5px;color:var(--mut);margin-top:8px}
+
+/* ---------- выноски ---------- */
+.note{
+  border-left:3px solid var(--brand);background:var(--wash);
+  padding:16px 20px;border-radius:0 10px 10px 0;margin:0 0 20px;max-width:68ch
+}
+.note--warn{border-color:var(--warn);background:var(--warn-wash)}
+.note--ok{border-color:var(--ok);background:var(--ok-wash)}
+.note p:last-child{margin-bottom:0}
+.note .t{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mut);display:block;margin-bottom:7px
+}
+
+/* ---------- шаги ---------- */
+.steps{list-style:none;padding:0;margin:0;max-width:none}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:20px;padding-bottom:30px;position:relative}
+.step:not(:last-child)::before{
+  content:"";position:absolute;left:21px;top:42px;bottom:0;width:1px;background:var(--rule)
+}
+.step__n{
+  width:42px;height:42px;border-radius:50%;border:1px solid var(--rule);background:var(--ground);
+  display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:14px;
+  color:var(--brand);position:relative;z-index:1
+}
+.step__b h3{margin:8px 0 8px}
+.step__b p:last-child,.step__b ul:last-child{margin-bottom:0}
+
+/* ---------- таблицы ---------- */
+.scroller{overflow-x:auto;margin:0 0 22px;border:1px solid var(--rule);border-radius:12px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mut);font-weight:400;background:var(--paper-2);white-space:nowrap
+}
+tr:last-child td{border-bottom:0}
+td.mono,th.mono{font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:nowrap}
+
+/* ---------- чипы кодов ответа ---------- */
+.chip{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;
+  padding:2px 9px;border-radius:999px;border:1px solid;white-space:nowrap
+}
+.chip--200{color:var(--ok);border-color:var(--ok);background:var(--ok-wash)}
+.chip--301{color:var(--brand);border-color:var(--brand);background:var(--wash)}
+.chip--410{color:var(--warn);border-color:var(--warn);background:var(--warn-wash)}
+.chip--404{color:var(--mut);border-color:var(--rule);background:var(--paper-2)}
+
+/* ---------- код ---------- */
+pre{
+  background:var(--paper-2);border:1px solid var(--rule-soft);border-radius:10px;
+  padding:16px 18px;overflow-x:auto;margin:0 0 20px;font-size:13px;line-height:1.65
+}
+pre code{background:none;padding:0;color:var(--ink-soft)}
+
+/* ---------- чек-лист ---------- */
+.check{list-style:none;padding:0;margin:0 0 20px;max-width:68ch}
+.check li{
+  display:grid;grid-template-columns:22px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--rule-soft)
+}
+.check li::before{
+  content:"";width:15px;height:15px;margin-top:5px;border:1.5px solid var(--rule);border-radius:4px
+}
+.check li:last-child{border-bottom:0}
+
+footer{
+  margin-top:76px;padding-top:22px;border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--mut);
+  display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Группа компаний «Айсберг» · инструкция для клиента</p>
+  <h1>Переезд <em>iceberg.spb.ru</em> без потери позиций</h1>
+  <p class="lede">Мы меняем движок сайта — с WordPress на новый статический сайт, — сохраняя адреса страниц
+    и поисковые сигналы один в один. Для поисковика это не переезд, а обновление того же сайта.
+    Ниже — что происходит, что нужно от вас и в каком порядке переключаемся.</p>
+  <div class="meta">
+    <span>Документ от <b>24 августа 2026</b></span>
+    <span>Проверено URL: <b>212</b></span>
+    <span>Домен: <b>iceberg.spb.ru</b></span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <nav class="toc" aria-label="Содержание">
+    <h2>Содержание</h2>
+    <ol>
+      <li><a href="#sut"><span>01</span>Что происходит</a></li>
+      <li><a href="#karta"><span>02</span>Карта адресов</a></li>
+      <li><a href="#redirect"><span>03</span>Редиректы</a></li>
+      <li><a href="#robots"><span>04</span>robots и sitemap</a></li>
+      <li><a href="#poryadok"><span>05</span>Порядок переезда</a></li>
+      <li><a href="#proverka"><span>06</span>Проверка после</a></li>
+      <li><a href="#monitoring"><span>07</span>Мониторинг и откат</a></li>
+      <li><a href="#dostupy"><span>08</span>Что нужно от вас</a></li>
+      <li><a href="#granicy"><span>09</span>Границы и что дальше</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <section id="sut">
+    <h2><span class="n">01</span> Что происходит</h2>
+
+    <p>Сейчас сайт работает на WordPress. Мы заменяем его на новый — сверстанный вручную, быстрый,
+      без плагинов и админки WordPress. При этом <strong>адреса всех страниц остаются прежними</strong>,
+      заголовки в поиске тоже. Поисковая система видит те же URL с тем же смыслом — значит, накопленные
+      позиции и возраст страниц переходят на новый сайт. Это называется склейкой.</p>
+
+    <p>Что важно понимать про структуру старого сайта: в карте сайта заявлено 105 адресов, но реального
+      контента там всего <strong>13 страниц</strong>. Остальные 92 адреса — пустые страницы-переадресации
+      каталога трикотажа, которые давно ведут на <code>biflex.tkany.com</code>. Их мы тоже сохраняем,
+      но делаем короче: раньше человек и поисковый робот проходили два перехода, теперь — один.</p>
+
+    <div class="grid grid--3">
+      <div class="tile"><div class="k">86 947</div><div class="l">визитов за 365 дней — точка отсчёта, снятая до изменений</div></div>
+      <div class="tile"><div class="k">88,2 %</div><div class="l">трафика приходит из рекламы, в основном на «Швейное производство»</div></div>
+      <div class="tile"><div class="k">4,3 %</div><div class="l">органический поиск (3 723 визита), почти весь — по названию компании</div></div>
+    </div>
+
+    <p>Отсюда главный приоритет переезда: <strong>ни один рекламный адрес не должен сломаться</strong>.
+      Просадку в органике мы бы увидели через недели, а неработающая посадочная страница под рекламой
+      начинает жечь бюджет в первый же час. Поэтому все URL сохранены дословно, а переключение проходит
+      с предварительной сверкой и готовым откатом.</p>
+
+    <div class="note note--ok">
+      <span class="t">Проверено 24 августа</span>
+      <p>Мы прогнали все 212 адресов старого сайта через правила нового: 14 отдают страницу,
+        189 — переадресацию на верную цель, 6 — «страница удалена», 3 — «не найдено» (это старые
+        служебные файлы, страницами они никогда не были). Незакрытых дыр нет.</p>
+    </div>
+  </section>
+
+  <section id="karta">
+    <h2><span class="n">02</span> Карта адресов</h2>
+
+    <p>Одиннадцать живых страниц переезжают на новый сайт с теми же адресами и теми же заголовками.
+      Мы сверили заголовок и канонический адрес каждой страницы с текущим сайтом — совпадение
+      полное, символ в символ.</p>
+
+    <div class="scroller">
+      <table>
+        <thead><tr><th class="mono">Адрес</th><th>Что это</th><th>После переезда</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">/</td><td>Главная</td><td><span class="chip chip--200">200</span> новая главная</td></tr>
+          <tr><td class="mono">/shveinoe-proizvodstvo/</td><td>Швейное производство — основная посадочная рекламы</td><td><span class="chip chip--200">200</span> новая посадочная</td></tr>
+          <tr><td class="mono">/izgotovlenie-startovykh-maek/</td><td>Стартовые майки</td><td><span class="chip chip--200">200</span> текст сохранён</td></tr>
+          <tr><td class="mono">/izgotovlenie-kupalnikov-i-sportivnoi-odezhdi/</td><td>Купальники и спортивная одежда</td><td><span class="chip chip--200">200</span> текст сохранён</td></tr>
+          <tr><td class="mono">/mashinnaya-vishivka/</td><td>Машинная вышивка</td><td><span class="chip chip--200">200</span> текст сохранён</td></tr>
+          <tr><td class="mono">/tkani-print/</td><td>Печать на ткани</td><td><span class="chip chip--200">200</span> текст сохранён</td></tr>
+          <tr><td class="mono">/tkani-optom/</td><td>Ткани оптом</td><td><span class="chip chip--200">200</span> текст сохранён</td></tr>
+          <tr><td class="mono">/contacts/</td><td>Контакты</td><td><span class="chip chip--200">200</span> с картой</td></tr>
+          <tr><td class="mono">/vacancy/</td><td>Вакансии</td><td><span class="chip chip--200">200</span> текст сохранён</td></tr>
+          <tr><td class="mono">/technicheskie-tkani/</td><td>Технические ткани</td><td><span class="chip chip--200">200</span> точная копия старой страницы</td></tr>
+          <tr><td class="mono">/emdi/</td><td>EMDI</td><td><span class="chip chip--200">200</span> точная копия старой страницы</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Две страницы намеренно закрываются</h3>
+    <div class="scroller">
+      <table>
+        <thead><tr><th class="mono">Адрес</th><th>Почему</th><th>Куда ведёт</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">/trikotazhnie-polotna-pricelist1/</td>
+            <td>Прайс трикотажа: 0 визитов и 0 переходов из поиска за год, все ссылки внутри ведут на biflex</td>
+            <td><span class="chip chip--301">301</span> biflex.tkany.com</td>
+          </tr>
+          <tr>
+            <td class="mono">/zhenskaya-odezhda-kupalniki/</td>
+            <td>Дубль по смыслу со страницей купальников, собственного трафика нет</td>
+            <td><span class="chip chip--301">301</span> /izgotovlenie-kupalnikov…/</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="t">Про копии двух страниц</span>
+      <p><code>/technicheskie-tkani/</code> и <code>/emdi/</code> мы перенесли как точные копии — они
+        относятся к другим направлениям (Tech и EMDI) и будут переделаны в рамках своих проектов.
+        Сейчас задача одна: чтобы при смене движка они не пропали и выглядели как раньше.</p>
+    </div>
+  </section>
+
+  <section id="redirect">
+    <h2><span class="n">03</span> Редиректы</h2>
+
+    <p>Переадресация (редирект) — это указание браузеру и поисковику: «страница теперь живёт по другому
+      адресу». Код <strong>301</strong> означает «навсегда» — поисковик переносит накопленный вес на новый
+      адрес. Код <strong>410</strong> — «страница удалена намеренно», по нему поисковик быстрее убирает
+      мусор из выдачи, чем по обычному «не найдено».</p>
+
+    <p>Все правила лежат в одном файле <code>.htaccess</code> в корне сайта. Ниже — что они делают.</p>
+
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Группа адресов</th><th>Сколько</th><th>Действие</th><th>Зачем</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">/trikotazhnie-*</td><td>180</td>
+            <td><span class="chip chip--301">301</span> biflex.tkany.com</td>
+            <td>Каталог трикотажа давно переехал на biflex. Раньше шёл в два перехода — теперь в один</td>
+          </tr>
+          <tr>
+            <td class="mono">/category/trikotazhnie-*</td><td>1</td>
+            <td><span class="chip chip--301">301</span> biflex.tkany.com</td>
+            <td>Рубрика того же каталога. Нашли при проверке 24 августа — в прежнем варианте она бы отвалилась</td>
+          </tr>
+          <tr>
+            <td class="mono">/feed/, /comments/feed/</td><td>2</td>
+            <td><span class="chip chip--301">301</span> на раздел</td>
+            <td>RSS-ленты WordPress. На них ссылались все 13 страниц, без правила стали бы «не найдено»</td>
+          </tr>
+          <tr>
+            <td class="mono">/index.php</td><td>1</td>
+            <td><span class="chip chip--301">301</span> на главную</td>
+            <td>Точка входа WordPress. На старом сайте вела на главную — повторяем поведение</td>
+          </tr>
+          <tr>
+            <td class="mono">/documents/pricelist_print.php</td><td>1</td>
+            <td><span class="chip chip--301">301</span> на PDF</td>
+            <td>Прайс в PDF, который собирал скрипт WordPress. Мы скачали готовый файл и кладём рядом</td>
+          </tr>
+          <tr>
+            <td class="mono">/page-sitemap.xml, /post-sitemap.xml</td><td>2</td>
+            <td><span class="chip chip--301">301</span> /sitemap.xml</td>
+            <td>Старые карты сайта заменяются одной новой</td>
+          </tr>
+          <tr>
+            <td class="mono">www.iceberg.spb.ru, http://</td><td>—</td>
+            <td><span class="chip chip--301">301</span> https без www</td>
+            <td>Один канонический адрес сайта, как и сейчас</td>
+          </tr>
+          <tr>
+            <td class="mono">/wp-admin/, /wp-login.php, /xmlrpc.php…</td><td>10</td>
+            <td><span class="chip chip--410">410</span></td>
+            <td>Служебные адреса мёртвого WordPress: закрываем, чтобы не собирать попытки взлома</td>
+          </tr>
+          <tr>
+            <td class="mono">/slide-anything-popup-preview/</td><td>1</td>
+            <td><span class="chip chip--410">410</span></td>
+            <td>Служебная страница плагина, случайно попавшая в индекс</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note note--warn">
+      <span class="t">Важное правило переезда</span>
+      <p>Ни один старый адрес не должен вести в «страница не найдена». Если после переключения
+        обнаружится забытый адрес — это не повод откатывать весь сайт: достаточно добавить одну строку
+        в <code>.htaccess</code>. Но проверить лучше сразу, в первый час (раздел 06).</p>
+    </div>
+  </section>
+
+  <section id="robots">
+    <h2><span class="n">04</span> robots.txt и карта сайта</h2>
+
+    <h3>robots.txt — что можно индексировать</h3>
+    <p>Файл лежит в корне сайта и говорит поисковым роботам, какие адреса обходить. Новый файл открывает
+      весь сайт, закрывает остатки WordPress и указывает путь к карте сайта:</p>
+
+    <pre><code>User-agent: *
+Allow: /
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+
+Clean-param: utm_source&amp;utm_medium&amp;utm_campaign&amp;utm_term&amp;utm_content&amp;
+             yclid&amp;ymclid&amp;gclid&amp;_openstat&amp;from
+
+Sitemap: https://iceberg.spb.ru/sitemap.xml</code></pre>
+
+    <p>Строка <code>Clean-param</code> — это про рекламные метки. Когда человек приходит из Директа,
+      к адресу добавляется хвост вида <code>?utm_source=yandex</code>. Для поисковика это как будто
+      другая страница — и в индексе появляются дубли. <code>Clean-param</code> говорит Яндексу:
+      «эти метки не меняют содержимое, считай такие адреса одной страницей».</p>
+
+    <div class="note note--warn">
+      <span class="t">Чего мы намеренно не сделали</span>
+      <p>Распространённый приём — закрыть в robots.txt все адреса с параметрами строкой
+        <code>Disallow: /*?*</code>. Мы от него отказались: под этот запрет попадают
+        <strong>рекламные посадочные с UTM-метками</strong>, а на них приходится 88 % трафика сайта.
+        Дубли снимаем аккуратнее — через <code>Clean-param</code> и канонический адрес на самой странице.</p>
+    </div>
+
+    <h3>sitemap.xml — карта сайта</h3>
+    <p>Старая карта содержала 105 адресов, из которых 92 были переадресациями. Поисковику это сигнал
+      «сайт полон пустых страниц». Новая карта содержит <strong>11 адресов — только живые страницы</strong>,
+      с датой обновления и приоритетом. Старые адреса карты переадресуются на новый файл, чтобы
+      Вебмастер не ругался на пропажу.</p>
+  </section>
+
+  <section id="poryadok">
+    <h2><span class="n">05</span> Порядок переезда</h2>
+
+    <p>Восемь шагов. Первые три — подготовка без единого изменения на живом сайте, поэтому их можно
+      делать спокойно и заранее. Само переключение занимает минуты.</p>
+
+    <ol class="steps">
+      <li class="step">
+        <div class="step__n">0</div>
+        <div class="step__b">
+          <h3>Точка отсчёта <span class="chip chip--200" style="vertical-align:middle">сделано</span></h3>
+          <p>Снимок трафика и позиций до изменений — чтобы через месяц было с чем сравнивать.
+            Снят 19 августа: 86 947 визитов за год, показатель качества сайта (СКИ) — 100,
+            в поиске 24 страницы, топ-запросы брендовые.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">1</div>
+        <div class="step__b">
+          <h3>Полный бэкап текущего сайта</h3>
+          <p>До того как что-то трогать: копия файлов сайта и выгрузка базы данных WordPress.
+            Это страховка отката — если что-то пойдёт не так, старый сайт возвращается на место
+            за десять минут. Бэкап хранить у себя, не только на хостинге.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">2</div>
+        <div class="step__b">
+          <h3>Заливка на служебный адрес и сверка</h3>
+          <p>Новый сайт выкладывается в отдельную папку на том же хостинге и проверяется по списку:
+            каждый адрес открывается, заголовок совпадает со старым, формы отправляются, страницы
+            выглядят одинаково на телефоне и компьютере. На этом шаге живой сайт ещё работает как обычно.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">3</div>
+        <div class="step__b">
+          <h3>Переключение</h3>
+          <p>Содержимое новой папки переносится в корень сайта вместе с файлом правил
+            <code>.htaccess</code>. С этого момента посетители видят новый сайт. Занимает несколько минут;
+            лучше делать в будний день утром, когда есть время проследить, и не в пятницу вечером.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">4</div>
+        <div class="step__b">
+          <h3>Отключение WordPress</h3>
+          <p>Старый движок глушится полностью: файлы WordPress убираются из корня, вход в админку
+            закрывается. Оставлять два движка на одном домене нельзя — они начнут конфликтовать за адреса.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">5</div>
+        <div class="step__b">
+          <h3>Проверка в первый час</h3>
+          <p>Прогон по чек-листу из раздела 06. Отдельно — рекламные посадочные, по которым идёт
+            основной бюджет, и обязательно с рекламной меткой в адресе.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">6</div>
+        <div class="step__b">
+          <h3>Яндекс.Вебмастер</h3>
+          <p>Добавить новую карту сайта, переобойти главные страницы, проверить раздел «Диагностика».
+            То же самое в Google Search Console, если она подключена. Счётчик Метрики на новых
+            страницах уже стоит — трафик не прервётся.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step__n">7</div>
+        <div class="step__b">
+          <h3>Наблюдение 2–4 недели</h3>
+          <p>Сравниваем с точкой отсчёта: визиты, позиции по брендовым запросам, число страниц в поиске,
+            ошибки в Вебмастере. Небольшие колебания в первые дни — норма, поисковику нужно переобойти сайт.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="proverka">
+    <h2><span class="n">06</span> Проверка после переключения</h2>
+
+    <p>Что должно открыться сразу же — этот список закрывает 98 % возможных проблем.</p>
+
+    <ul class="check">
+      <li>Главная, «Швейное производство», «Стартовые майки», «Купальники», «Вышивка», «Печать на ткани»,
+        «Ткани оптом», «Контакты», «Вакансии» — открываются, заголовок вкладки как раньше.</li>
+      <li>«Технические ткани» и EMDI — открываются и выглядят как на старом сайте.</li>
+      <li>Любой адрес каталога трикотажа (например <code>/trikotazhnie-polotna/100/</code>) —
+        одним переходом уводит на biflex.tkany.com.</li>
+      <li>Рекламная ссылка с меткой (<code>/shveinoe-proizvodstvo/?utm_source=test</code>) — открывается,
+        метка не ломает страницу.</li>
+      <li>Адрес без завершающей косой черты (<code>/contacts</code>) — сам добавляет её и открывает страницу.</li>
+      <li><code>www.iceberg.spb.ru</code> и <code>http://</code> — переводят на основной адрес.</li>
+      <li><code>/robots.txt</code> и <code>/sitemap.xml</code> — открываются, содержимое как в разделе 04.</li>
+      <li>Несуществующий адрес (<code>/proverka-404/</code>) — показывает нашу страницу «Такой страницы нет»,
+        а не пустую ошибку сервера.</li>
+      <li>Форма заявки отправляется, заявка доходит.</li>
+      <li>Счётчик Метрики фиксирует визит (проверить в отчёте «По минутам»).</li>
+    </ul>
+
+    <div class="note">
+      <span class="t">Быстрая проверка кодов ответа</span>
+      <p>Если под рукой есть терминал, весь список проверяется одной командой — она покажет
+        код ответа для каждого адреса:</p>
+      <pre style="margin-bottom:0"><code>for u in / /shveinoe-proizvodstvo/ /contacts/ /trikotazhnie-polotna/100/ /robots.txt; do
+  printf "%-34s" "$u"
+  curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" "https://iceberg.spb.ru$u"
+done</code></pre>
+    </div>
+  </section>
+
+  <section id="monitoring">
+    <h2><span class="n">07</span> Мониторинг и откат</h2>
+
+    <h3>За чем следим</h3>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Показатель</th><th>Где смотреть</th><th>Норма</th><th>Тревога</th></tr></thead>
+        <tbody>
+          <tr><td>Визиты из поиска</td><td>Метрика, «Источники»</td><td>колебания ±20 % первые дни</td><td>падение вдвое дольше недели</td></tr>
+          <tr><td>Страниц в поиске</td><td>Вебмастер, «Страницы в поиске»</td><td>24 ± несколько</td><td>обвал до единиц</td></tr>
+          <tr><td>Позиции по бренду</td><td>Вебмастер, «Запросы»</td><td>«айсберг ткани» около 2-й позиции</td><td>вылет из топ-10</td></tr>
+          <tr><td>Ошибки обхода</td><td>Вебмастер, «Диагностика»</td><td>единичные</td><td>рост «не найдено»</td></tr>
+          <tr><td>Заявки с сайта</td><td>CRM</td><td>как обычно</td><td>тишина сутки</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Откат</h3>
+    <p>План отката простой и быстрый: вернуть из бэкапа файлы WordPress и базу, убрать новый
+      <code>.htaccess</code>. Сайт возвращается в прежний вид, поисковик ничего не успевает пересчитать.
+      Поэтому шаг 1 (бэкап) — не формальность, а условие спокойного переезда.</p>
+
+    <div class="note note--ok">
+      <span class="t">Почему риск невысокий</span>
+      <p>Органика сайта почти полностью брендовая: люди ищут «айсберг ткани» и находят главную.
+        Такие запросы держатся на названии компании и текстах, а не на технических тонкостях, —
+        и то, и другое мы сохранили. Рекламные адреса не меняются вообще.</p>
+    </div>
+  </section>
+
+  <section id="dostupy">
+    <h2><span class="n">08</span> Что нужно от вас</h2>
+
+    <div class="grid grid--3">
+      <div class="tile">
+        <div class="l" style="margin:0 0 8px;color:var(--brand);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase">Обязательно</div>
+        <p style="margin:0;font-size:15px"><strong>Доступ к хостингу</strong> (панель, FTP или SSH).
+          Нужен, чтобы сделать бэкап и залить новый сайт. До этого шага доступ не требуется.</p>
+      </div>
+      <div class="tile">
+        <div class="l" style="margin:0 0 8px;color:var(--brand);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase">Обязательно</div>
+        <p style="margin:0;font-size:15px"><strong>Куда отправлять заявки</strong> — почта или подключение
+          к CRM. Сейчас форма показывает «спасибо», но письмо никуда не уходит.</p>
+      </div>
+      <div class="tile">
+        <div class="l" style="margin:0 0 8px;color:var(--mut);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase">Желательно</div>
+        <p style="margin:0;font-size:15px"><strong>Фотографии производства</strong> — цех, оборудование,
+          готовые изделия. Сейчас на посадочной стоят временные заглушки.</p>
+      </div>
+    </div>
+
+    <p>Реквизиты, телефон и почта на новом сайте взяты с текущего — если что-то изменилось,
+      сообщите до переключения.</p>
+  </section>
+
+  <section id="granicy">
+    <h2><span class="n">09</span> Границы работы и что дальше</h2>
+
+    <p>Этот переезд касается <strong>только iceberg.spb.ru</strong>. Сайты <code>tkany.com</code>,
+      <code>biflex.tkany.com</code> и <code>emdi.ru</code> мы не трогаем — только ссылаемся на них
+      из меню и переадресуем на biflex каталог трикотажа.</p>
+
+    <h3>Что остаётся на следующие этапы</h3>
+    <ul>
+      <li><strong>Подключение заявок к CRM</strong> — делается вместе с переключением или сразу после.</li>
+      <li><strong>Панель управления сайтом</strong> — чтобы маркетолог сам правил тексты, фото и SEO-поля
+        без разработчика. Готова примерно наполовину, ставится <em>после</em> переезда: сначала убеждаемся,
+        что склейка прошла, потом добавляем.</li>
+      <li><strong>Страницы «Технические ткани» и EMDI</strong> — сейчас точные копии старых,
+        переделываются в рамках проектов Tech и EMDI.</li>
+      <li><strong>Старые картинки WordPress</strong> — если хотите сохранить их адреса для поиска по
+        картинкам, при заливке копируем папку загрузок со старого сайта. Решение не срочное.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Группа компаний «Айсберг» · переезд iceberg.spb.ru</span>
+    <span>Версия документа: 24.08.2026</span>
+  </footer>
+
+  </main>
+</div>
+</div>
