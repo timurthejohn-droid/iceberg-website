@@ -1,0 +1,106 @@
+# ============================================================================
+#  iceberg.spb.ru — .htaccess для shared-хостинга (Apache, sprinthost)
+#  Аналог nginx-iceberg.conf: смена движка (WordPress → статика) БЕЗ смены URL.
+#  Кладётся в корень сайта (public_html) рядом с index.html.
+#  Карта редиректов: 01-iceberg/redirect-map-trikotazh.csv · рунбук: RUNBOOK.md
+# ============================================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- www → без www (canonical — non-www) ---------------------------------
+  RewriteCond %{HTTP_HOST} ^www\.iceberg\.spb\.ru$ [NC]
+  RewriteRule ^(.*)$ https://iceberg.spb.ru/$1 [R=301,L]
+
+  # --- Принудительный HTTPS (на живом сайте http→https отдаёт 301 — повторяем) ---
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://iceberg.spb.ru/$1 [R=301,L]
+
+  # --- Мёртвый WordPress и мусор плагина → 410 Gone (флаг [G]) --------------
+  RewriteRule ^wp-admin(/|$)         - [G,L]
+  RewriteRule ^wp-login\.php$        - [G,L]
+  RewriteRule ^xmlrpc\.php$          - [G,L]
+  RewriteRule ^wp-comments-post\.php$ - [G,L]
+  RewriteRule ^wp-cron\.php$          - [G,L]
+  RewriteRule ^wp-signup\.php$        - [G,L]
+  RewriteRule ^wp-trackback\.php$     - [G,L]
+  RewriteRule ^wp-json(/|$)          - [G,L]
+  RewriteRule ^wp-includes(/|$)      - [G,L]
+  RewriteRule ^wp-content/(plugins|themes)(/|$) - [G,L]
+  RewriteRule ^slide-anything-popup-preview/?$ - [G,L]
+
+  # --- Точка входа WordPress: на живом /index.php отдаёт 301 на / — повторяем ---
+  RewriteRule ^index\.php$ https://iceberg.spb.ru/ [R=301,L]
+
+  # --- RSS-ленты WordPress (были 200, на них ссылались все 13 страниц) ----
+  #     Ленты не воспроизводим — уводим на соответствующие разделы (301).
+  RewriteRule ^comments/feed/?$ https://iceberg.spb.ru/ [R=301,L]
+  RewriteRule ^feed/?$          https://iceberg.spb.ru/ [R=301,L]
+
+  # --- 1. КАТАЛОГ ТРИКОТАЖА → biflex.tkany.com, одним хопом (301) ------------
+  #     Ловим ВСЕ варианты каталога (polotna, polotna1, tkani, -pricelist,
+  #     -pricelist1, numbered) — весь трикотаж уехал на biflex.
+  #     Прайс /trikotazhnie-polotna-pricelist1/ (был 200, 0 трафика) — тоже
+  #     сюда: решение клиента убрать страницу, 301 вместо 404.
+  RewriteRule ^trikotazhnie- https://biflex.tkany.com/ [R=301,L]
+
+  # --- 1a. Рубрика каталога (на живом: /category/trikotazhnie-polotna/ →301→
+  #     /trikotazhnie-polotna/ →301→ biflex). У нас — одним хопом. ------------
+  RewriteRule ^category/trikotazhnie- https://biflex.tkany.com/ [R=301,L]
+  RewriteRule ^category(/|$)          https://iceberg.spb.ru/ [R=301,L]
+
+  # --- 1b. Хвост /feed/ у любой оставшейся страницы → сама страница ---------
+  RewriteRule ^(.+?)/feed/?$ https://iceberg.spb.ru/$1/ [R=301,L]
+
+  # --- 2. Пустая /zhenskaya-odezhda-kupalniki/ → на купальники (301) --------
+  RewriteRule ^zhenskaya-odezhda-kupalniki/?$ https://iceberg.spb.ru/izgotovlenie-kupalnikov-i-sportivnoi-odezhdi/ [R=301,L]
+
+  # --- 2a. Прайс-PDF: на живом /documents/pricelist_print.php отдаёт PDF
+  #     (генерировался PHP). PHP не будет — кладём готовый файл рядом. -------
+  RewriteRule ^documents/pricelist_print\.php$ https://iceberg.spb.ru/documents/pricelist.pdf [R=301,L]
+
+  # --- 3. Старый sitemap (All in One SEO) → новый чистый sitemap.xml (301) -------------
+  RewriteRule ^(page|post)-sitemap\.xml$ https://iceberg.spb.ru/sitemap.xml [R=301,L]
+</IfModule>
+
+# --- 3a. Обработчик заявок: закрываем всё, кроме самого send.php ----------
+#     mail-config.php содержит пароль SMTP, leads.log — персональные данные,
+#     lib/ — исходники PHPMailer. Прямой доступ к ним из браузера запрещён.
+<FilesMatch "^(mail-config\.php|leads\.log)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^lib(/|$) - [F,L]
+</IfModule>
+
+# --- 4. Кэш статики -------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                "access plus 30 days"
+  ExpiresByType application/javascript  "access plus 30 days"
+  ExpiresByType image/jpeg              "access plus 30 days"
+  ExpiresByType image/png               "access plus 30 days"
+  ExpiresByType image/webp              "access plus 30 days"
+  ExpiresByType image/svg+xml           "access plus 30 days"
+  ExpiresByType font/woff2              "access plus 30 days"
+  ExpiresByType video/mp4               "access plus 30 days"
+</IfModule>
+
+# --- 5. Своя страница 404 (файл кладётся в корень релизом) ----------------
+ErrorDocument 404 /404.html
+
+# --- 6. gzip/сжатие (если модуль включён) --------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>
