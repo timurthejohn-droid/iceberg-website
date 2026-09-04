@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: /
+
+# Превью на GitHub Pages: индексация закрыта полностью.
