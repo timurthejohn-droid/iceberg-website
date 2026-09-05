@@ -1,0 +1,144 @@
+# ============================================================================
+#  iceberg.spb.ru — веб-корень (public_html).
+#
+#  ОДИН файл на весь сайт: SEO-редиректы после ухода с WordPress + защита
+#  служебных файлов + роутинг на фронт-контроллер админки.
+#  Собран из двух источников: .htaccess сборки подрядчика (редиректы, 410 на
+#  остатки WP, защита обработчика форм) и роутинга бэкенда.
+#
+#  Порядок блоков важен: сначала 301/410 (они должны срабатывать ДО PHP),
+#  и только потом переброс на index.php.
+# ============================================================================
+
+Options -Indexes -MultiViews
+ServerSignature Off
+DirectoryIndex index.php index.html
+
+# --- Заголовки безопасности на статику (PHP-страницы ставят свои в коде) ---
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================================================
+#  1. Закрыть служебное
+# ============================================================================
+
+# Dot-файлы, база, журналы, бэкапы, исходники, документация.
+<FilesMatch "(^\.|\.(db|sqlite|sqlite3|log|md|bak|inc|ini)$|~$)">
+    Require all denied
+</FilesMatch>
+
+# Настройки почты с паролем SMTP и журнал заявок с персональными данными.
+<FilesMatch "^(mail-config\.php|leads\.log)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Если app/ и data/ по каким-то причинам лежат ВНУТРИ веб-корня — закрыть наглухо.
+RedirectMatch 403 ^/(app|data)(/|$)
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Исходники PHPMailer — не отдавать.
+    RewriteRule ^lib(/|$) - [F,L]
+
+# ============================================================================
+#  2. SEO: смена движка (WordPress → статика) БЕЗ смены адресов.
+#     Карта редиректов: website/01-iceberg/redirect-map-trikotazh.csv
+# ============================================================================
+
+    # --- www → без www (каноничный адрес — без www) ---
+    RewriteCond %{HTTP_HOST} ^www\.iceberg\.spb\.ru$ [NC]
+    RewriteRule ^(.*)$ https://iceberg.spb.ru/$1 [R=301,L]
+
+    # --- Принудительный HTTPS (на живом сайте http→https отдаёт 301 — повторяем) ---
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^(.*)$ https://iceberg.spb.ru/$1 [R=301,L]
+
+    # --- Мёртвый WordPress и мусор плагина → 410 Gone ---
+    RewriteRule ^wp-admin(/|$)          - [G,L]
+    RewriteRule ^wp-login\.php$         - [G,L]
+    RewriteRule ^xmlrpc\.php$           - [G,L]
+    RewriteRule ^wp-comments-post\.php$ - [G,L]
+    RewriteRule ^wp-cron\.php$          - [G,L]
+    RewriteRule ^wp-signup\.php$        - [G,L]
+    RewriteRule ^wp-trackback\.php$     - [G,L]
+    RewriteRule ^wp-json(/|$)           - [G,L]
+    RewriteRule ^wp-includes(/|$)       - [G,L]
+    RewriteRule ^wp-content/(plugins|themes)(/|$) - [G,L]
+    RewriteRule ^slide-anything-popup-preview/?$  - [G,L]
+
+    # --- Точка входа WordPress: /index.php отдавал 301 на / — повторяем.
+    #     Условие REDIRECT_STATUS обязательно: без него внутренний переброс
+    #     на index.php (блок 3) снова попал бы под это правило — вечный цикл.
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteRule ^index\.php$ https://iceberg.spb.ru/ [R=301,L]
+
+    # --- RSS-ленты WordPress (были 200, на них ссылались все страницы) ---
+    RewriteRule ^comments/feed/?$ https://iceberg.spb.ru/ [R=301,L]
+    RewriteRule ^feed/?$          https://iceberg.spb.ru/ [R=301,L]
+
+    # --- Каталог трикотажа → biflex.tkany.com, одним хопом ---
+    RewriteRule ^trikotazhnie-          https://biflex.tkany.com/ [R=301,L]
+    RewriteRule ^category/trikotazhnie- https://biflex.tkany.com/ [R=301,L]
+    RewriteRule ^category(/|$)          https://iceberg.spb.ru/ [R=301,L]
+
+    # --- Хвост /feed/ у любой оставшейся страницы → сама страница ---
+    RewriteRule ^(.+?)/feed/?$ https://iceberg.spb.ru/$1/ [R=301,L]
+
+    # --- Пустая /zhenskaya-odezhda-kupalniki/ → на купальники ---
+    RewriteRule ^zhenskaya-odezhda-kupalniki/?$ https://iceberg.spb.ru/izgotovlenie-kupalnikov-i-sportivnoi-odezhdi/ [R=301,L]
+
+    # --- Прайс: раньше генерировался PHP, теперь готовый файл рядом ---
+    RewriteRule ^documents/pricelist_print\.php$ https://iceberg.spb.ru/documents/pricelist.pdf [R=301,L]
+
+    # --- Старый sitemap (All in One SEO) → новый ---
+    RewriteRule ^(page|post)-sitemap\.xml$ https://iceberg.spb.ru/sitemap.xml [R=301,L]
+
+# ============================================================================
+#  3. Фронт-контроллер: управляемые страницы отдаёт PHP
+#     Их эталоны лежат ВНЕ веб-корня, поэтому файла для них здесь нет.
+# ============================================================================
+
+    # У админки своя точка входа — её не перехватываем.
+    RewriteCond %{REQUEST_URI} !^/admin(/|$)
+    # Реальные файлы (картинки, шрифты, send.php, снимки WP) отдаёт Apache сам.
+    # Проверяем ТОЛЬКО файл: у внутренних страниц каталог остаётся на месте,
+    # а index.html из него перенесён в baseline — условие !-d всё бы сломало.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# ============================================================================
+#  4. Кэш и сжатие
+# ============================================================================
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp   "access plus 30 days"
+    ExpiresByType image/jpeg   "access plus 30 days"
+    ExpiresByType image/png    "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType video/mp4    "access plus 30 days"
+    ExpiresByType font/woff2   "access plus 180 days"
+    ExpiresByType text/css     "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>
+
+# --- Своя страница 404 ---
+ErrorDocument 404 /404.html

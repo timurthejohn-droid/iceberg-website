@@ -7,7 +7,7 @@
 <script>document.documentElement.classList.add('js');</script>
 <!-- Тест-посадочная под рекламу: 5 вариантов оффера отличаются только HERO.
      Дубли почти идентичны → закрываем от индексации, чтобы не плодить SEO-дубли. -->
-<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+
 <link rel="canonical" href="https://iceberg.spb.ru/shveinoe-proizvodstvo/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Айсберг — группа компаний">
@@ -690,6 +690,18 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
   .ckbar button{width:100%}}
 @media(prefers-reduced-motion:reduce){.ckbar{transition:none}}
 </style>
+
+<!-- Аналитика группы «Айсберг». НЕ УДАЛЯТЬ: на счётчике держится вся статистика сайта
+     и оптимизация рекламы в Яндекс.Директе. Номер счётчика и настройки — как на прежнем сайте. -->
+<meta name="yandex-verification" content="6b57f5f334f2b4da">
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,
+a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(61680454, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/61680454" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 </head>
 <body>
 
@@ -1139,7 +1151,7 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
   <div class="wrap final">
     <div class="reveal">
       <span class="eyebrow">Следующий шаг</span>
-      <h2 style="margin-top:16px">Расскажите про изделие — <em>посчитаем и поможем определиться с выбором</em></h2>
+      <h2 style="margin-top:16px"><!--cms:lp_final_h-->Расскажите про изделие — <em>посчитаем и поможем определиться с выбором</em><!--/cms:lp_final_h--></h2>
       <p class="lede">Оставьте имя и телефон. Перезвоним в течение рабочего дня, зададим пару вопросов и вернёмся с расчётом и примерами. Без обязательств.</p>
       <ul class="hero__trust" style="margin-top:24px">
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Ответ в течение рабочего дня</li>
@@ -1187,7 +1199,7 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
       <a href="../contacts/">СПб, Домостроительная 16М</a></div>
   </div>
   <div class="copy">
-    <span>© 2003–2026 Группа компаний «Айсберг»</span>
+    <span><!--cms:g_copy-->© 2003–2026 Группа компаний «Айсберг»<!--/cms:g_copy--></span>
     <span class="legal"><a href="../policy.html">Политика конфиденциальности</a><a href="../cookie_agreement.html">Соглашение об использовании файлов cookie</a></span>
   </div>
 </div></footer>
@@ -1318,7 +1330,7 @@ var OFFERS = {
             headers:{'Content-Type':'application/json;charset=utf-8'},
             body: JSON.stringify(lead)})
         .then(function(r){ return r.json(); })
-        .then(function(res){ if(!res || !res.ok){ form.classList.remove('is-sent');
+        .then(function(res){ if(res && res.ok){if(window.ym){ym(61680454,'reachGoal','lead');} } if(!res || !res.ok){ form.classList.remove('is-sent');
           err.textContent = (res && res.error) || 'Не удалось отправить. Позвоните: +7 (812) 325-69-93'; } })
         .catch(function(){ form.classList.remove('is-sent');
           err.textContent = 'Не удалось отправить. Позвоните: +7 (812) 325-69-93'; });
@@ -1583,6 +1595,15 @@ footer.site .copy a:hover{color:#15171A!important;border-bottom-color:#15171A!im
     max-width:100%;justify-content:center;}
   .btn{max-width:100%;white-space:normal;}
 }
+</style>
+<style id="consentfix">
+/* Согласие на обработку данных внутри белой карточки формы.
+   В исходном CSS у .consent стоит color:inherit — на тёмных блоках это даётбелый текст
+   и читается, но карточка на посадочной белая, и надпись пропадала. Явный тёмный цвет. */
+.leadcard .consent{color:#15171A!important;opacity:1!important}
+.leadcard .consent a{color:#15171A!important;text-decoration:underline}
+.leadcard .consent a:hover{opacity:.7}
+.leadcard .consent.is-bad,.leadcard .consent.is-bad a{color:#C0392B!important}
 </style>
 </body>
 </html>

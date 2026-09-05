@@ -7,7 +7,7 @@
 <title>Машинная вышивка - Айсберг - швейное производство, оптовая продажа тканей.</title>
 <meta name="description" content="Машинная вышивка на заказ в Санкт-Петербурге: нашивки, шевроны, вымпелы, вышивка на готовых изделиях и крое — от 1 штуки. Производство «Айсберг».">
 <link rel="canonical" href="https://iceberg.spb.ru/mashinnaya-vishivka/">
-<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Айсберг — группа компаний">
 <meta property="og:locale" content="ru_RU">
@@ -317,6 +317,18 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
   .ckbar button{width:100%}}
 @media(prefers-reduced-motion:reduce){.ckbar{transition:none}}
 :root{--navy:#1F5C42;--navy-d:#123D2C}</style>
+
+<!-- Аналитика группы «Айсберг». НЕ УДАЛЯТЬ: на счётчике держится вся статистика сайта
+     и оптимизация рекламы в Яндекс.Директе. Номер счётчика и настройки — как на прежнем сайте. -->
+<meta name="yandex-verification" content="6b57f5f334f2b4da">
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,
+a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(61680454, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/61680454" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 </head>
 <body>
 <header class="site">
@@ -367,7 +379,7 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
   <h1>Машинная вышивка</h1>
   
 </div></section>
-<main><div class="wrap">
+<main><!--cms:page_body--><div class="wrap">
 <div class="prose">
   <p>Компания «Айсберг» предлагает машинную вышивку на заказ, а также целый спектр дополнительных возможностей нанесения изображений на текстиль для рекламы и не только.</p>
   <p>Желанием нашего клиента может быть все — от миниатюрной швейной этикетки или вензеля на носовом платке, до вышивки на огромном театральном занавесе.</p>
@@ -380,10 +392,10 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
   <p>Индивидуальным клиентам мы предлагаем художественную штопку в качестве метода ремонта одежды. С помощью художественной штопки и использования машинной вышивки можно не только продлить жизнь любимым вещам, но сделать их лучше, чем они были.</p>
   <p>Очень эффектно смотрится вышивка золотом и металлизированными нитками другого цвета.</p>
 </div>
-<section class="lead-band" id="lead">
+<!--/cms:page_body--><section class="lead-band" id="lead">
   <div>
-    <h2>Заказать машинную вышивку</h2>
-    <p class="sub">Оставьте контакты — обсудим макет, материал и тираж, от 1 штуки.</p>
+    <h2><!--cms:lead_h-->Заказать машинную вышивку<!--/cms:lead_h--></h2>
+    <p class="sub"><!--cms:lead_sub-->Оставьте контакты — обсудим макет, материал и тираж, от 1 штуки.<!--/cms:lead_sub--></p>
   </div>
   <form class="lead leadform" data-form="vishivka">
     <label>Ваше имя<input type="text" name="name" autocomplete="name" placeholder="Как к вам обращаться"></label>
@@ -415,7 +427,7 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
       <a href="../contacts/">СПб, Домостроительная 16М</a></div>
   </div>
   <div class="copy">
-    <span>© 2003–2026 Группа компаний «Айсберг»</span>
+    <span><!--cms:g_copy-->© 2003–2026 Группа компаний «Айсберг»<!--/cms:g_copy--></span>
     <span class="legal"><a href="../policy.html">Политика конфиденциальности</a><a href="../cookie_agreement.html">Соглашение об использовании файлов cookie</a></span>
   </div>
 </div></footer>
@@ -469,7 +481,7 @@ footer.site .copy a:hover{color:#fff;border-bottom-color:#fff}
         body: JSON.stringify(data)
       }).then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
         .then(function(res){
-          if(res && res.ok){
+          if(res && res.ok){if(window.ym){ym(61680454,'reachGoal','lead');} 
             if(note) note.textContent = 'Спасибо! Заявка принята — свяжемся в ближайшее время.';
             f.querySelectorAll('input,textarea,button').forEach(function(el){ el.disabled = true; });
           } else {

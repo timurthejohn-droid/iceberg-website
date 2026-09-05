@@ -1,0 +1,21 @@
+# Папка загрузок: только раздача файлов, НИКАКОГО исполнения кода.
+# Даже если злоумышленник зальёт .php под видом картинки — он не выполнится.
+Options -ExecCGI -Indexes
+
+# Отключить любой обработчик скриптов.
+<IfModule mod_php.c>
+    php_admin_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_admin_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_admin_flag engine off
+</IfModule>
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .cgi .pl .py
+AddType text/plain .php .phtml .phps .cgi .pl .py .sh
+
+# И жёстко запретить отдачу исполняемых расширений.
+<FilesMatch "\.(php[0-9]?|phtml|phps|pl|py|cgi|sh|asp|aspx|jsp|htaccess)$">
+    Require all denied
+</FilesMatch>
