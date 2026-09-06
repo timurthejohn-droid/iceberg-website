@@ -51,11 +51,15 @@ PHP
 
 cd "$STAND"
 "$PHP" bin/install_layout.php > /dev/null
-"$PHP" bin/create_admin.php marketolog "PareVaLnyj2026pass" > /dev/null
+# Пользователь стенда. Заводим напрямую, минуя bin/create_admin.php: тот требует пароль
+# от 12 символов, а здесь нужен короткий и запоминающийся — стенд слушает только 127.0.0.1
+# и живёт до перезапуска. На боевом сервере администратор заводится именно create_admin.php,
+# и там правило про 12 символов действует.
+"$PHP" -r 'require "app/bootstrap.php"; Database::pdo(); if (!Auth::findByUsername("aloha")) Auth::createUser("aloha", "ice2027");' > /dev/null
 "$PHP" bin/seed.php > /dev/null
 
 cd "$STAND/public"
 nohup "$PHP" -S "127.0.0.1:$PORT" _router.php > "$STAND/server.log" 2>&1 &
 sleep 2
-echo "Стенд поднят: http://127.0.0.1:$PORT  (админка: /admin/, вход marketolog)"
+echo "Стенд поднят: http://127.0.0.1:$PORT  (админка: /admin/, вход aloha / ice2027)"
 echo "Проверки:     ICEBERG_STAND=$STAND ICEBERG_PHP=$PHP python3 $HERE/tests/smoke.py"

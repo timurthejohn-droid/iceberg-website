@@ -22,7 +22,7 @@ PHP   = os.environ.get('ICEBERG_PHP', 'php')
 BASE  = os.environ.get('ICEBERG_URL', 'http://127.0.0.1:8090')
 RUN   = STAND
 JAR   = os.path.join(STAND, 'cookies.txt')
-USER, PASS = 'marketolog', 'PareVaLnyj2026pass'
+USER, PASS = 'aloha', 'ice2027'          # пользователь стенда, заводится в stand.sh
 FAIL = []
 
 def req(url, data=None, follow=True, raw=False):
