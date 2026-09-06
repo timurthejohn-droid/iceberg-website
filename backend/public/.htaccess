@@ -19,6 +19,11 @@ DirectoryIndex index.php index.html
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    # HSTS: браузер запоминает, что сюда ходят только по HTTPS (защита от перехвата
+    # на первом, ещё http-запросе). На http-ответе заголовок просто игнорируется,
+    # поэтому ставим без условий. Страницы из PHP ставят такой же в коде.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     Header always unset X-Powered-By
     Header unset X-Powered-By
 </IfModule>
@@ -27,9 +32,20 @@ DirectoryIndex index.php index.html
 #  1. Закрыть служебное
 # ============================================================================
 
-# Dot-файлы, база, журналы, бэкапы, исходники, документация.
-<FilesMatch "(^\.|\.(db|sqlite|sqlite3|log|md|bak|inc|ini)$|~$)">
+# Dot-файлы, база, журналы, бэкапы, исходники, документация, архивы и дампы.
+<FilesMatch "(^\.|\.(db|sqlite|sqlite3|log|md|bak|inc|ini|sql|zip|tar|gz|tgz|7z|rar|old|orig|save|swp|dist)$|~$)">
     Require all denied
+</FilesMatch>
+
+# .well-known — служебный каталог для выпуска SSL-сертификатов и проверок владения доменом.
+# Правило запрета dot-файлов выше задевает и его, поэтому разрешаем явно.
+<FilesMatch "^\.well-known$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Allow from all
+    </IfModule>
 </FilesMatch>
 
 # Настройки почты с паролем SMTP и журнал заявок с персональными данными.
@@ -51,6 +67,15 @@ RedirectMatch 403 ^/(app|data)(/|$)
 
     # Исходники PHPMailer — не отдавать.
     RewriteRule ^lib(/|$) - [F,L]
+
+    # Служебные каталоги систем контроля версий и редакторов. FilesMatch выше их НЕ ловит:
+    # он смотрит на имя файла, а в «/.git/config» имя файла — обычное «config».
+    RewriteRule (^|/)\.(git|svn|hg|bzr|idea|vscode|DS_Store)(/|$) - [F,L]
+
+    # Любой другой файл или каталог, начинающийся с точки (кроме .well-known — он нужен
+    # для выпуска сертификатов).
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteRule (^|/)\.[^/]+ - [F,L]
 
 # ============================================================================
 #  2. SEO: смена движка (WordPress → статика) БЕЗ смены адресов.

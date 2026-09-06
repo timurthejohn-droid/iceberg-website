@@ -14,13 +14,26 @@ final class Security
         return false;
     }
 
-    /** Редирект на HTTPS. Пропускаем localhost — для локальной проверки без сертификата. */
+    /** Каноничный хост сайта — берём из конфига, а не из запроса. */
+    public static function canonicalHost(): string
+    {
+        return (string)parse_url(App::baseUrl(), PHP_URL_HOST);
+    }
+
+    /**
+     * Редирект на HTTPS. Пропускаем localhost — для локальной проверки без сертификата.
+     *
+     * Адрес назначения берём из конфига, а НЕ из заголовка Host: заголовок задаёт клиент,
+     * и подстановка чужого домена превращала бы сайт в открытый редирект
+     * (`Host: evil.example` → 301 на https://evil.example/...), удобный для фишинга.
+     */
     public static function enforceHttps(): void
     {
         $host = $_SERVER['HTTP_HOST'] ?? '';
         $isLocal = str_contains($host, 'localhost') || str_starts_with($host, '127.') || $host === '';
         if (!self::isHttps() && !$isLocal) {
-            header('Location: https://' . $host . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
+            $target = self::canonicalHost() ?: preg_replace('/[^A-Za-z0-9.\-:]/', '', $host);
+            header('Location: https://' . $target . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
             exit;
         }
     }
@@ -74,15 +87,47 @@ final class Security
         if (session_status() === PHP_SESSION_ACTIVE) session_destroy();
     }
 
-    /** Заголовки для ПУБЛИЧНЫХ страниц. CSP мягкая — сайт использует inline-скрипты/шрифты base64. */
+    /**
+     * Заголовки для ПУБЛИЧНЫХ страниц.
+     *
+     * CSP здесь мягче админской и обязана быть такой: вёрстка сборки держится на inline-стилях
+     * и inline-скриптах (шейдер первого экрана, секвенция яхты, меню, формы), а из внешнего
+     * подключается только счётчик Метрики. Поэтому 'unsafe-inline' оставлен осознанно —
+     * политика не ловит инъекцию в саму страницу, но закрывает главное: подгрузку чужого
+     * скрипта, отправку формы на чужой домен, подмену <base>, встраивание сайта в чужой фрейм.
+     * Перечень источников можно переопределить ключом PUBLIC_CSP в config.php (пустая строка —
+     * выключить заголовок совсем, если что-то сломается на боевом).
+     */
     public static function publicHeaders(): void
     {
         header('X-Content-Type-Options: nosniff');
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('X-Frame-Options: SAMEORIGIN');
+        header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()');
         header_remove('X-Powered-By');
         if (self::isHttps()) {
             header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+        }
+
+        $ya = 'https://mc.yandex.ru https://mc.yandex.com https://yastatic.net';
+        $csp = App::config('PUBLIC_CSP', null);
+        if ($csp === null) {
+            $csp = "default-src 'self'; "
+                 . "base-uri 'self'; "
+                 . "object-src 'none'; "
+                 . "frame-ancestors 'self'; "
+                 . "form-action 'self'; "
+                 . "script-src 'self' 'unsafe-inline' $ya; "
+                 . "style-src 'self' 'unsafe-inline'; "
+                 . "img-src 'self' data: blob: $ya https://*.yandex.net; "
+                 . "font-src 'self' data:; "
+                 . "media-src 'self' data: blob:; "
+                 . "connect-src 'self' $ya; "
+                 . "frame-src 'self' $ya https://www.youtube.com https://rutube.ru https://vk.com; "
+                 . "worker-src 'self' blob:";
+        }
+        if ((string)$csp !== '') {
+            header('Content-Security-Policy: ' . $csp);
         }
     }
 

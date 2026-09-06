@@ -11,6 +11,9 @@ final class Auth
 {
     private const PENDING_TTL = 300;   // 5 мин на прохождение 2FA после пароля
 
+    /** Что именно не так с последним кодом 2FA: 'bad' | 'replay' | 'blocked'. Для текста ошибки. */
+    public static string $lastTotpError = 'bad';
+
     /** Алгоритм хеша: argon2id если доступен, иначе — системный дефолт (bcrypt). */
     private static function hashAlgo(): string
     {
@@ -109,19 +112,61 @@ final class Auth
         return self::findById((int)$uid);
     }
 
-    /** Шаг 2а: проверка кода 2FA для уже привязанного секрета. */
+    /**
+     * Шаг 2а: проверка кода 2FA для уже привязанного секрета.
+     *
+     * Второй шаг защищён так же, как первый: пароль мог утечь, и тогда единственное,
+     * что стоит между злоумышленником и админкой, — шестизначный код. Без счётчика
+     * попыток его подбирают перебором, поэтому здесь тот же RateLimiter, что и на пароле,
+     * плюс счётчик в сессии: после нескольких промахов пароль спрашивается заново.
+     */
     public static function verifyTotpAndLogin(string $code): bool
     {
         $user = self::pendingUser();
         if (!$user || (int)$user['totp_enabled'] !== 1) return false;
 
-        $secret = Crypto::decrypt((string)$user['totp_secret']);
-        if (!$secret || !Totp::verify($secret, $code)) {
-            Audit::log('login_2fa_fail', $user['username']);
+        self::$lastTotpError = 'bad';
+        $ip = client_ip();
+        if (RateLimiter::retryAfter($ip, $user['username']) > 0) {
+            Audit::log('login_2fa_blocked', $user['username']);
+            self::$lastTotpError = 'blocked';
             return false;
         }
+
+        $secret = Crypto::decrypt((string)$user['totp_secret']);
+        $counter = $secret ? Totp::verifyCounter($secret, $code) : null;
+
+        // Код верен, но уже использовался (перехват из чужих рук / повтор запроса) — не пускаем.
+        if ($counter !== null && $counter <= (int)($user['totp_last_counter'] ?? 0)) {
+            Audit::log('login_2fa_replay', $user['username']);
+            self::$lastTotpError = 'replay';
+            $counter = null;
+        }
+
+        if ($counter === null) {
+            RateLimiter::record($ip, (string)$user['username'], false);
+            Audit::log('login_2fa_fail', $user['username']);
+            self::countTwofaFail();
+            return false;
+        }
+
+        $st = Database::pdo()->prepare('UPDATE users SET totp_last_counter = ? WHERE id = ?');
+        $st->execute([$counter, $user['id']]);
+        RateLimiter::record($ip, (string)$user['username'], true);
+
+        $user['totp_last_counter'] = $counter;
         self::finalizeLogin($user);
         return true;
+    }
+
+    /** Несколько промахов подряд — сбрасываем ожидание 2FA, пароль спрашиваем заново. */
+    private static function countTwofaFail(): void
+    {
+        $_SESSION['twofa_fails'] = (int)($_SESSION['twofa_fails'] ?? 0) + 1;
+        if ($_SESSION['twofa_fails'] >= 5) {
+            unset($_SESSION['pending_uid'], $_SESSION['pending_at'],
+                  $_SESSION['setup_secret'], $_SESSION['twofa_fails']);
+        }
     }
 
     /** Шаг 2б: привязка и включение 2FA при первом входе. Секрет держим в сессии до подтверждения. */
@@ -137,14 +182,17 @@ final class Auth
     {
         $user = self::pendingUser();
         $secret = $_SESSION['setup_secret'] ?? '';
-        if (!$user || !$secret || !Totp::verify($secret, $code)) {
+        $counter = ($user && $secret) ? Totp::verifyCounter($secret, $code) : null;
+        if ($counter === null) {
             Audit::log('2fa_setup_fail', $user['username'] ?? null);
+            self::countTwofaFail();
             return false;
         }
+        // Код привязки сразу помечаем использованным: иначе им же можно войти второй раз.
         $st = Database::pdo()->prepare(
-            'UPDATE users SET totp_secret = ?, totp_enabled = 1 WHERE id = ?'
+            'UPDATE users SET totp_secret = ?, totp_enabled = 1, totp_last_counter = ? WHERE id = ?'
         );
-        $st->execute([Crypto::encrypt($secret), $user['id']]);
+        $st->execute([Crypto::encrypt($secret), $counter, $user['id']]);
         unset($_SESSION['setup_secret']);
         Audit::log('2fa_enabled', $user['username']);
 
@@ -156,7 +204,8 @@ final class Auth
     private static function finalizeLogin(array $user): void
     {
         session_regenerate_id(true);
-        unset($_SESSION['pending_uid'], $_SESSION['pending_at'], $_SESSION['setup_secret']);
+        unset($_SESSION['pending_uid'], $_SESSION['pending_at'],
+              $_SESSION['setup_secret'], $_SESSION['twofa_fails']);
         $_SESSION['auth_uid']   = (int)$user['id'];
         $_SESSION['username']   = $user['username'];
         $_SESSION['role']       = $user['role'];

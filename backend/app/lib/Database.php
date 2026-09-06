@@ -48,7 +48,8 @@ final class Database
                 role          TEXT    NOT NULL DEFAULT 'admin',
                 created_at    INTEGER NOT NULL,
                 last_login_at INTEGER,
-                must_change   INTEGER NOT NULL DEFAULT 0
+                must_change   INTEGER NOT NULL DEFAULT 0,
+                totp_last_counter INTEGER NOT NULL DEFAULT 0  -- последнее использованное окно 2FA
             );
 
             CREATE TABLE IF NOT EXISTS login_attempts (
@@ -118,5 +119,19 @@ final class Database
             );
             CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(ts);
         SQL);
+
+        // Колонки, добавленные после первой установки. CREATE TABLE IF NOT EXISTS их не заведёт,
+        // поэтому дополняем отдельно — тоже идемпотентно.
+        self::addColumn('users', 'totp_last_counter', 'INTEGER NOT NULL DEFAULT 0');
+    }
+
+    /** Добавить колонку, если её ещё нет (SQLite не умеет ADD COLUMN IF NOT EXISTS). */
+    private static function addColumn(string $table, string $column, string $definition): void
+    {
+        $st = self::$pdo->prepare('SELECT COUNT(*) FROM pragma_table_info(?) WHERE name = ?');
+        $st->execute([$table, $column]);
+        if ((int)$st->fetchColumn() === 0) {
+            self::$pdo->exec("ALTER TABLE $table ADD COLUMN $column $definition");
+        }
     }
 }

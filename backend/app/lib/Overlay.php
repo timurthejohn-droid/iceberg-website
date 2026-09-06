@@ -388,6 +388,7 @@ final class Overlay
             $ok = array_merge($allow['*'] ?? [], $allow[$tag] ?? []);
             if (!$ok) return '<' . $tag . '>';
             $keep = '';
+            $blank = false;
             if (preg_match_all('#([a-z\-]+)\s*=\s*("[^"]*"|\'[^\']*\')#i', $m[2], $at, PREG_SET_ORDER)) {
                 foreach ($at as $a) {
                     $name = strtolower($a[1]);
@@ -397,40 +398,90 @@ final class Overlay
                         || str_starts_with($name, 'data-');
                     if (!$allowedName) continue;
                     $val = trim($a[2], '"\'');
-                    if (str_contains(strtolower($val), 'javascript:')) continue;
+                    // Адресные атрибуты — по белому списку схем (см. linkAllowed).
+                    if (in_array($name, ['href', 'src', 'srcset', 'poster', 'action', 'formaction'], true)
+                        && !self::linkAllowed($val)) {
+                        continue;
+                    }
+                    // style — оформление, но не место для исполняемых конструкций старых браузеров.
+                    if ($name === 'style'
+                        && preg_match('/javascript\s*:|expression\s*\(|behavio(u)?r\s*:|-moz-binding|@import/i', $val)) {
+                        continue;
+                    }
+                    if ($name === 'target' && strtolower($val) === '_blank') $blank = true;
                     $keep .= ' ' . $name . '="' . htmlspecialchars($val, ENT_QUOTES, 'UTF-8') . '"';
                 }
             }
+            // target="_blank" без rel даёт открытой вкладке доступ к window.opener — дописываем rel.
+            if ($blank && !preg_match('/\srel="/i', $keep)) $keep .= ' rel="noopener noreferrer"';
             return '<' . $tag . $keep . '>';
         }, $html) ?? $html;
     }
 
-    /** Вырезать javascript:/data:-ссылки (кроме картинок-data). */
+    /**
+     * Разрешена ли ссылка. Список РАЗРЕШЁННЫХ схем, а не запрещённых: браузер выкидывает
+     * из адреса табы, переводы строки и управляющие символы ДО разбора схемы, поэтому
+     * «java<таб>script:» для него — обычный javascript:. Проверка по чёрному списку это
+     * пропускала; здесь адрес сначала нормализуется ровно так же, как это делает браузер.
+     */
+    private static function linkAllowed(string $raw): bool
+    {
+        $v = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $v = preg_replace('/[\x00-\x20\x7f\xA0]|%09|%0a|%0d/iu', '', $v) ?? $v;   // как браузер
+        $v = trim($v);
+        if ($v === '') return true;
+        if (!preg_match('#^([a-z][a-z0-9+.\-]*):#i', $v, $m)) return true;        // относительная, /путь, #якорь
+        $scheme = strtolower($m[1]);
+        if (in_array($scheme, ['http', 'https', 'mailto', 'tel'], true)) return true;
+        // data: — только растровые картинки. SVG исключён намеренно: внутри него живёт скрипт.
+        return preg_match('#^data:image/(png|jpe?g|gif|webp)\s*[;,]#i', $v) === 1;
+    }
+
+    /** Заменить непригодные ссылки на «#». Работает и с одинарными кавычками. */
     private static function dropBadLinks(string $html): string
     {
-        return preg_replace_callback('#\s(href|src)\s*=\s*"([^"]*)"#i', static function ($m) {
-            $v = trim(html_entity_decode($m[2], ENT_QUOTES, 'UTF-8'));
-            $scheme = strtolower((string)parse_url($v, PHP_URL_SCHEME));
-            if ($scheme === 'javascript' || $scheme === 'vbscript') return ' ' . $m[1] . '="#"';
-            if (str_starts_with(strtolower(ltrim($v)), 'data:') && !str_starts_with(strtolower(ltrim($v)), 'data:image/')) {
-                return ' ' . $m[1] . '="#"';
-            }
-            return $m[0];
+        $attrs = 'href|src|srcset|action|formaction|xlink:href|poster|background|ping';
+        return preg_replace_callback(
+            '#\s(' . $attrs . ')\s*=\s*("([^"]*)"|\'([^\']*)\')#i',
+            static function ($m) {
+                $val = ($m[2][0] ?? '"') === '"' ? ($m[3] ?? '') : ($m[4] ?? '');
+                return self::linkAllowed($val) ? $m[0] : ' ' . $m[1] . '="#"';
+            },
+            $html
+        ) ?? $html;
+    }
+
+    /**
+     * <iframe> — только карты и видео с известных доменов.
+     * Проверяем КАЖДЫЙ открывающий тег, а не пару «открыт…закрыт»: незакрытый <iframe src="…">
+     * браузер закрывает сам, и по прежней парной регулярке такой кадр проходил мимо белого списка.
+     */
+    private static function dropForeignFrames(string $html): string
+    {
+        $hosts = ['yandex.ru', 'yandex.com', 'www.youtube.com', 'youtube.com', 'youtube-nocookie.com',
+                  'rutube.ru', 'vk.com', 'vkvideo.ru'];
+        // 1. Пары <iframe>…</iframe> с чужим src — вырезаем вместе с содержимым.
+        $html = preg_replace_callback('#<iframe\b([^>]*)>(.*?)</iframe>#is', static function ($m) use ($hosts) {
+            return self::frameHostOk($m[1], $hosts) ? $m[0] : '';
+        }, $html) ?? $html;
+        // 2. Оставшиеся одиночные открывающие теги (незакрытые) — по тому же правилу.
+        return preg_replace_callback('#<iframe\b([^>]*)>#i', static function ($m) use ($hosts) {
+            return self::frameHostOk($m[1], $hosts) ? $m[0] : '';
         }, $html) ?? $html;
     }
 
-    /** <iframe> — только карты и видео с известных доменов, остальные удаляем целиком. */
-    private static function dropForeignFrames(string $html): string
+    /** Домен в src кадра входит в белый список? */
+    private static function frameHostOk(string $attrs, array $hosts): bool
     {
-        $hosts = ['yandex.ru', 'yandex.com', 'www.youtube.com', 'youtube.com', 'rutube.ru', 'vk.com', 'vkvideo.ru'];
-        return preg_replace_callback('#<iframe\b([^>]*)>(.*?)</iframe>#is', static function ($m) use ($hosts) {
-            if (!preg_match('#src\s*=\s*"([^"]*)"#i', $m[1], $s)) return '';
-            $host = strtolower((string)parse_url(html_entity_decode($s[1], ENT_QUOTES, 'UTF-8'), PHP_URL_HOST));
-            foreach ($hosts as $ok) {
-                if ($host === $ok || str_ends_with($host, '.' . $ok)) return $m[0];
-            }
-            return '';
-        }, $html) ?? $html;
+        if (!preg_match('#src\s*=\s*("([^"]*)"|\'([^\']*)\')#i', $attrs, $s)) return false;
+        $url = html_entity_decode(($s[2] !== '' ? $s[2] : ($s[3] ?? '')), ENT_QUOTES, 'UTF-8');
+        $url = preg_replace('/[\x00-\x20\x7f]/', '', $url) ?? $url;
+        $host = strtolower((string)parse_url($url, PHP_URL_HOST));
+        if ($host === '') return false;
+        foreach ($hosts as $ok) {
+            if ($host === $ok || str_ends_with($host, '.' . $ok)) return true;
+        }
+        return false;
     }
 
     private static function absUrl(string $v): string

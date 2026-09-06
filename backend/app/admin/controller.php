@@ -9,6 +9,17 @@ require __DIR__ . '/views.php';
 
 final class AdminController
 {
+    /**
+     * Поля, где пустое значение означает «вернуть как в вёрстке», а не «оставить пусто».
+     *
+     * Пустой <title> или <h1> на боевой странице — прямая потеря позиций, а промахнуться легко:
+     * достаточно стереть текст и нажать «Сохранить». Текстовые блоки сюда НЕ входят — там пусто
+     * значит пусто (так, например, убирается черновая пометка под блоком «Группа в цифрах»).
+     */
+    private const REVERT_ON_EMPTY = ['title', 'description', 'canonical', 'robots',
+                                     'og_title', 'og_description', 'og_image', 'h1',
+                                     'image', 'css_image'];
+
     public static function handle(): void
     {
         $p = (string)($_GET['p'] ?? 'dashboard');
@@ -62,8 +73,14 @@ final class AdminController
     {
         if (!Auth::pendingUser()) redirect('/admin/?p=login');
         if (Auth::verifyTotpAndLogin(req_str($_POST, 'code'))) redirect('/admin/?p=dashboard');
-        flash('error', 'Неверный код. Проверьте приложение-аутентификатор.');
-        redirect('/admin/?p=twofa');
+
+        flash('error', match (Auth::$lastTotpError) {
+            'replay'  => 'Этот код уже использован. Дождитесь в приложении следующего — он меняется раз в 30 секунд.',
+            'blocked' => 'Слишком много попыток. Подождите и повторите вход с самого начала.',
+            default   => 'Неверный код. Проверьте приложение-аутентификатор.',
+        });
+        // Пять промахов подряд сбрасывают ожидание кода — тогда пароль спрашиваем заново.
+        redirect(Auth::pendingUser() ? '/admin/?p=twofa' : '/admin/?p=login');
     }
 
     private static function showTwofaSetup(): void
@@ -128,6 +145,12 @@ final class AdminController
             // Эталон прогоняем через ту же очистку, иначе «сохранить, ничего не меняя»
             // каждый раз создавало бы переопределение из-за нормализации разметки.
             $default = $defaults[$key] === null ? null : self::cleanValue($def['type'], (string)$defaults[$key]);
+
+            // Пусто там, где пустым быть нельзя, — возвращаем текст из вёрстки.
+            if ($val === '' && $default !== null && in_array($def['type'], self::REVERT_ON_EMPTY, true)) {
+                if (Content::field($slug, $key) !== null) { Content::deleteField($slug, $key, $me); $changed++; }
+                continue;
+            }
 
             // Пусто и в вёрстке ничего не было (фото-слот, отсутствующий мета-тег) — хранить нечего.
             if ($default === null && $val === '') {
@@ -273,10 +296,18 @@ final class AdminController
                 flash('ok', 'Пароль изменён.');
             }
         } elseif ($action === 'reset2fa') {
-            Database::pdo()->prepare('UPDATE users SET totp_enabled = 0, totp_secret = NULL WHERE id = ?')
-                ->execute([$me['id']]);
-            Audit::log('2fa_reset', $me['username']);
-            flash('ok', 'Сброшено. При следующем входе заново привяжете приложение-аутентификатор.');
+            // Пароль спрашиваем ещё раз: сброс 2FA снимает второй фактор, и без этой проверки
+            // им воспользовался бы любой, кто дорвался до открытой вкладки с админкой.
+            if (!password_verify((string)($_POST['current'] ?? ''), $me['pass_hash'])) {
+                Audit::log('2fa_reset_denied', $me['username']);
+                flash('error', 'Для сброса 2FA введите текущий пароль.');
+            } else {
+                Database::pdo()->prepare(
+                    'UPDATE users SET totp_enabled = 0, totp_secret = NULL, totp_last_counter = 0 WHERE id = ?'
+                )->execute([$me['id']]);
+                Audit::log('2fa_reset', $me['username']);
+                flash('ok', 'Сброшено. При следующем входе заново привяжете приложение-аутентификатор.');
+            }
         }
         redirect('/admin/?p=account');
     }

@@ -83,8 +83,38 @@ if ($phone !== '' && is_file($send)) {
     $add($has ? 'ok' : 'warn', 'Телефон в тексте ошибки send.php',
          $has ? 'совпадает с настройками' : "в send.php остался прежний номер — поправить вручную (в админке он не правится)");
 }
+// Журнал заявок: в нём персональные данные (имя, телефон, IP), поэтому его место — ВНЕ веб-корня.
 $log = Leads::logPath();
 $add(is_file($log) ? 'ok' : 'warn', 'Журнал заявок', is_file($log) ? $log . ' (' . human_size((int)filesize($log)) . ')' : 'ещё не создан — появится с первой заявкой');
+$add($inside($log, $pub) ? 'err' : 'ok', 'Журнал заявок вне веб-корня',
+     $inside($log, $pub) ? 'ЛЕЖИТ В public_html — персональные данные защищены только .htaccess, перенести выше'
+                         : dirname($log));
+$stray = $pub . '/leads.log';
+$add(is_file($stray) ? 'warn' : 'ok', 'Старый журнал в веб-корне',
+     is_file($stray) ? 'остался ' . $stray . ' — заявки из него уже прочитаны, файл удалить' : 'нет');
+if (is_file($mailCfg)) {
+    // Путь в mail-config.php (его читает send.php) и LEADS_LOG в config.php обязаны совпадать,
+    // иначе заявки будут писаться в один файл, а админка читать другой.
+    $cfgTxt = (string)file_get_contents($mailCfg);
+    $sameDir = preg_match("#'log_file'\s*=>\s*__DIR__\s*\.\s*'/\.\./leads\.log'#", $cfgTxt) === 1;
+    $add($sameDir ? 'ok' : 'warn', 'Путь журнала в mail-config.php',
+         $sameDir ? 'вне веб-корня, совпадает с LEADS_LOG' : 'проверить вручную: должен совпадать с LEADS_LOG в config.php');
+}
+
+// Права на файлы с данными: база и журнал не должны быть доступны соседям по shared-хостингу.
+$db = $data . '/content.db';
+if (is_file($db)) {
+    $perm = substr(sprintf('%o', fileperms($db)), -3);
+    $add(in_array($perm, ['600', '640'], true) ? 'ok' : 'warn', 'Права на базу content.db',
+         $perm . (in_array($perm, ['600', '640'], true) ? '' : ' — ожидались 600, поправить chmod 600'));
+}
+if (is_file($log)) {
+    $perm = substr(sprintf('%o', fileperms($log)), -3);
+    $add(in_array($perm, ['600', '640'], true) ? 'ok' : 'warn', 'Права на журнал заявок',
+         $perm . (in_array($perm, ['600', '640'], true) ? '' : ' — в файле персданные, поставить chmod 600'));
+}
+$add(ini_get('display_errors') ? 'err' : 'ok', 'Показ ошибок PHP выключен',
+     ini_get('display_errors') ? 'ВКЛЮЧЁН — стектрейсы утекут посетителю' : 'ошибки только в лог');
 
 // ---------- 6. Юридические страницы ----------
 foreach ([['policy.html', 'Политика конфиденциальности'], ['cookie_agreement.html', 'Соглашение о cookie']] as [$f, $name]) {

@@ -57,8 +57,15 @@ def login():
         secret=subprocess.run([PHP,'-r','require "app/bootstrap.php"; $u=Auth::findByUsername("' + USER + '"); echo Crypto::decrypt((string)$u["totp_secret"]);'],
                               cwd=RUN,capture_output=True).stdout.decode().strip()
         step='/admin/?p=twofa'
-    h=req(step,{'_csrf':csrf(h),'code':totp(secret)})
-    return h
+    r=req(step,{'_csrf':csrf(h),'code':totp(secret)})
+    # Код 2FA принимается один раз (защита от повтора). Два прогона подряд попадают
+    # в одно 30-секундное окно, и второй вход отвергается — ждём следующий код.
+    if 'Страницы сайта' not in r:
+        time.sleep(31 - int(time.time()) % 30)
+        h=req('/admin/?p=login')
+        h=req('/admin/?p=login',{'_csrf':csrf(h),'username':USER,'password':PASS})
+        r=req(step,{'_csrf':csrf(h),'code':totp(secret)})
+    return r
 
 def formfields(page):
     out={}
@@ -103,15 +110,27 @@ print('\n4. Правки на главной ложатся на сайт')
 print('  ', save('', {
     'num_note':'', 'title':'Айсберг — проверка админки',
     'hero_sub':'Ткани, одежда и <em>купальники</em> — проверка.',
-    'about_facts':'<div><b>2003</b><span>год основания</span></div>',
+    'about_facts':'<div><b>1998</b><span>год основания</span></div>',
     'co1_photo':'/uploads/test.jpg'}))
 site=req('/')
 check('черновая пометка «цифры уточняются» убрана', 'цифры уточняются' not in site)
 check('title заменён', '<title>Айсберг — проверка админки</title>' in site)
 check('подзаголовок заменён', 'купальники</em> — проверка' in site)
-check('год в фактах заменён', '<b>2003</b><span>год основания</span>' in site)
-check('фото подставилось через CSS', '.ph-tech{background-image:url(' in site)
+check('год в фактах заменён', '<b>1998</b><span>год основания</span>' in site)
+# Проверять надо именно вставленный блок: в самой вёрстке правило .ph-tech{background-image:url(…)}
+# уже есть — там заглушка в base64, и поиск по нему проходил бы всегда.
+_media = re.search(r'<style id="cms-media">(.*?)</style>', site, re.S)
+check('фото подставилось через CSS', bool(_media) and '/uploads/test.jpg' in _media.group(1)
+      and '!important' in _media.group(1))
 check('шейдер первого экрана цел', 'paper-shaders' in site and 'hero-fx__a' in site)
+
+print('\n4a. Пустое поле: заголовки возвращаются, текстовые блоки очищаются')
+_base_title = '<title>Айсберг - швейное производство, оптовая продажа тканей, трикотажных и технических.</title>'
+save('', {'title':'', 'h1':'', 'num_note':''})
+site=req('/')
+check('пустой title не публикуется — вернулся из вёрстки', _base_title in site)
+check('пустой H1 не публикуется', '<h1' in site and '<h1></h1>' not in site.replace(' ',''))
+check('а текстовая пометка остаётся убранной', 'цифры уточняются' not in site)
 
 print('\n5. Оффер посадочной (первый экран задаётся скриптом)')
 print('  ', save('shveinoe-proizvodstvo', {
@@ -150,7 +169,9 @@ check('почта отдела кадров НЕ затронута', 'info@iceb
 check('основной телефон на странице вакансий заменён', 'tel:+78120001122' in vac)
 
 print('\n8. Заявки с форм')
-log=os.path.join(RUN,'public','leads.log')
+# Журнал лежит ВНЕ веб-корня (в нём персональные данные) — пишем туда же, куда send.php.
+log=subprocess.run([PHP,'-r','require "app/bootstrap.php"; echo Leads::logPath();'],
+                   cwd=RUN,capture_output=True).stdout.decode().strip() or os.path.join(RUN,'leads.log')
 rows=[{"Имя":"Иван Петров","Контакт":"+7 921 000-00-01","Сообщение":"Нужен бифлекс, 300 м",
        "Форма":"main-contacts","Страница":"https://iceberg.spb.ru/","Время":"05.09.2026 10:12:00",
        "IP":"1.2.3.4","utm_source":"yandex","utm_campaign":"proizvodstvo"},
@@ -167,6 +188,16 @@ req('/admin/?p=leads', {'_csrf':csrf(h),'action':'done','id':mid,'status':'','q'
 h=req('/admin/?p=leads&status=done')
 check('заявка помечена обработанной', 'lead--done' in h)
 h=req('/admin/?p=leads')
+# Журнал, оставшийся в веб-корне от прежней установки, тоже должен читаться — иначе при
+# переносе заявки «потерялись» бы.
+old=os.path.join(RUN,'public','leads.log')
+with open(old,'w',encoding='utf-8') as f:
+    f.write(json.dumps({"Имя":"Старый журнал","Контакт":"+7 921 000-00-09","Сообщение":"—",
+                        "Форма":"legacy","Страница":"https://iceberg.spb.ru/","Время":"05.09.2026 12:00:00",
+                        "IP":"9.9.9.9"},ensure_ascii=False)+'\n')
+h=req('/admin/?p=leads')
+check('заявки из прежнего журнала в веб-корне тоже подхватываются', 'Старый журнал' in h)
+
 check('повторный заход не задваивает заявки', h.count('Иван Петров')==1)
 csv=req('/admin/?p=leads', {'_csrf':csrf(h),'action':'export','status':'','q':''}, raw=True)
 check('выгрузка CSV работает', csv.startswith(b'\xef\xbb\xbf') and 'Иван Петров'.encode() in csv)

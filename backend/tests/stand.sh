@@ -29,7 +29,7 @@ cp -R "$DIST/." "$STAND/public/"                  # сборка сайта в �
 cp "$HERE/public/.htaccess" "$STAND/public/.htaccess"   # объединённый — поверх того, что из dist
 mkdir -p "$STAND/data" "$STAND/app/baseline"
 rm -f "$STAND/data/content.db" "$STAND/data/content.db-wal" "$STAND/data/content.db-shm" \
-      "$STAND/public/leads.log" "$STAND"/data/cache/page_*.html
+      "$STAND/public/leads.log" "$STAND/leads.log" "$STAND"/data/cache/page_*.html
 
 # Конфиг стенда
 "$PHP" -r '

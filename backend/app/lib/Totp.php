@@ -30,15 +30,25 @@ final class Totp
     /** Проверка кода. window=1 => допускаем ±30 сек рассинхрон часов. */
     public static function verify(string $secret, string $code, int $window = 1): bool
     {
-        $code = preg_replace('/\D/', '', $code);
-        if (strlen($code) !== 6) return false;
+        return self::verifyCounter($secret, $code, $window) !== null;
+    }
+
+    /**
+     * То же, но возвращает НОМЕР временного окна, на котором код совпал (или null).
+     * Номер нужен, чтобы запомнить использованный код: без этого перехваченный код
+     * работает ещё полторы минуты и его можно применить повторно.
+     */
+    public static function verifyCounter(string $secret, string $code, int $window = 1): ?int
+    {
+        $code = preg_replace('/\D/', '', $code) ?? '';
+        if (strlen($code) !== 6) return null;
         $counter = (int)floor(time() / 30);
         for ($i = -$window; $i <= $window; $i++) {
             if (hash_equals(self::code($secret, $counter + $i), $code)) {
-                return true;
+                return $counter + $i;
             }
         }
-        return false;
+        return null;
     }
 
     /** Код для конкретного счётчика времени. */

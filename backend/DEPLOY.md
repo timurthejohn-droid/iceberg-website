@@ -105,6 +105,7 @@ python3 tools/cms_markers.py --check     # должно быть «уже раз
 ~/app/            ←  backend/app/  целиком   (ВНЕ веб-корня)
 ~/app/baseline/   ←  создастся на шаге 3
 ~/data/           ←  пустой, права на запись (база, кэш, бэкапы)   (ВНЕ веб-корня)
+~/leads.log       ←  журнал заявок, создастся сам с первой заявкой  (ВНЕ веб-корня: персданные)
 ~/public_html/
      ├── (содержимое 04-site-iceberg/dist/ — весь сайт, включая send.php, lib/, mail-config.php)
      ├── index.php     ←  backend/public/index.php
@@ -125,8 +126,14 @@ python3 tools/cms_markers.py --check     # должно быть «уже раз
 'PUBLIC_DIR'   => '/home/ЛОГИН/public_html',
 'BASE_URL'     => 'https://iceberg.spb.ru',
 'APP_SECRET'   => '…',        // openssl rand -hex 32
-'LEADS_LOG'    => '',         // пусто = public_html/leads.log, куда пишет send.php
+'LEADS_LOG'    => __DIR__ . '/../leads.log',   // = ~/leads.log, ВЫШЕ веб-корня
 ```
+
+> ⚠️ **Журнал заявок держим выше веб-корня.** В нём имя, телефон и IP каждого обратившегося.
+> Путь прописан в двух местах и обязан совпадать: `LEADS_LOG` здесь и `'log_file'` в
+> `public_html/mail-config.php` (`__DIR__ . '/../leads.log'`). Если на хостинге стоит `open_basedir`
+> и запись выше `public_html` запрещена — положите журнал в `~/data/leads.log` и пропишите этот путь
+> в обоих файлах. Проверяет `bin/check_deploy.php`.
 
 **Шаг 3. Поднять базу, эталоны и админа**
 ```bash

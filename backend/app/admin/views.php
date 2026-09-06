@@ -245,6 +245,12 @@ final class View
             $out .= "<details class='field__def'><summary>Было в оригинале</summary>"
                   . "<div class='orig'>" . h($default) . "</div></details>";
         }
+        // Подсказка ровно там, где пустое поле не оставляет пустоту, а возвращает исходный текст.
+        if ($current !== null && $default !== null && $default !== ''
+            && in_array($type, ['title', 'description', 'canonical', 'robots',
+                                'og_title', 'og_description', 'h1'], true)) {
+            $out .= "<div class='field__h'>Очистите поле и сохраните — вернётся текст из вёрстки.</div>";
+        }
         $out .= "</div>";
         return $out;
     }
@@ -411,8 +417,9 @@ final class View
         $body .= "<section class='panel'><h2 class='panel__t'>Двухфакторная защита</h2>"
                . "<p class='muted'>Статус: " . ((int)$me['totp_enabled'] === 1 ? "<b class='ok-t'>включена</b>" : "выключена")
                . ". Сброс потребует заново привязать приложение при следующем входе.</p>"
-               . "<form method=post action='/admin/?p=account' data-confirm='Сбросить 2FA?'>"
+               . "<form method=post action='/admin/?p=account' class='form' data-confirm='Сбросить 2FA?'>"
                . Csrf::field() . "<input type=hidden name=action value=reset2fa>"
+               . self::input('current', 'Текущий пароль — подтвердите, что это вы', '', ['type' => 'password'])
                . "<button class='btn btn--ghost'>Сбросить 2FA</button></form></section>";
         self::shell('account', 'Аккаунт', $body);
     }

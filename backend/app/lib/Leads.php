@@ -38,19 +38,42 @@ final class Leads
         SQL);
     }
 
+    /**
+     * Основной путь журнала. Он лежит ВНЕ веб-корня (см. DEPLOY.md): в журнале персональные
+     * данные — имя, телефон, IP, — и держать их в public_html под защитой одного лишь
+     * .htaccess нельзя: любая смена веб-сервера или потеря файла правил открывает их всем.
+     */
     public static function logPath(): string
     {
         $p = (string)App::config('LEADS_LOG', '');
-        return $p !== '' ? $p : rtrim((string)App::config('PUBLIC_DIR'), '/') . '/leads.log';
+        return $p !== '' ? $p : rtrim((string)App::config('PUBLIC_DIR'), '/') . '/../leads.log';
+    }
+
+    /** Где ещё искать журнал: старое место в веб-корне (до переноса) — чтобы заявки не потерялись. */
+    public static function logPaths(): array
+    {
+        $paths = [self::logPath(), rtrim((string)App::config('PUBLIC_DIR'), '/') . '/leads.log'];
+        $out = [];
+        foreach ($paths as $p) {
+            $real = realpath($p) ?: $p;
+            if (!isset($out[$real]) && is_file($p) && is_readable($p)) $out[$real] = $p;
+        }
+        return array_values($out);
     }
 
     /** Перенести новые строки журнала в базу. Возвращает, сколько добавлено. */
     public static function ingest(): int
     {
         self::migrate();
-        $file = self::logPath();
-        if (!is_file($file) || !is_readable($file)) return 0;
+        $added = 0;
+        foreach (self::logPaths() as $file) {
+            $added += self::ingestFile($file);
+        }
+        return $added;
+    }
 
+    private static function ingestFile(string $file): int
+    {
         $size = (int)filesize($file);
         $fh = @fopen($file, 'rb');
         if (!$fh) return 0;
@@ -149,7 +172,13 @@ final class Leads
     {
         $out = "\xEF\xBB\xBF";
         $head = ['Дата', 'Имя', 'Контакт', 'Сообщение', 'Форма', 'Страница', 'Метки', 'Статус', 'Заметка'];
+        // Заявки приходят от анонимных посетителей. Ячейка, начинающаяся с = + - @, для Excel
+        // и Google Таблиц — ФОРМУЛА: открыв выгрузку, менеджер выполнил бы чужой код
+        // (=HYPERLINK, =WEBSERVICE и т.п.). Обезвреживаем апострофом — он в ячейке не виден.
         $esc = static function (string $v): string {
+            if ($v !== '' && str_contains("=+-@\t\r|", $v[0])) {
+                $v = "'" . $v;
+            }
             $v = str_replace('"', '""', $v);
             return '"' . $v . '"';
         };

@@ -27,6 +27,25 @@ $checks[] = ['Запись рядом со скриптом', $writable, $writab
 $rewrite = !function_exists('apache_get_modules') || in_array('mod_rewrite', apache_get_modules(), true);
 $checks[] = ['mod_rewrite', $rewrite, function_exists('apache_get_modules') ? ($rewrite ? 'есть' : 'НЕТ') : 'не проверить (не Apache-модуль PHP)'];
 
+// Журнал заявок и база лежат ВЫШЕ веб-корня (в них персональные данные). Если хостинг заперт
+// в public_html через open_basedir, туда не записать — это надо знать ДО заливки.
+$basedir = (string)ini_get('open_basedir');
+$checks[] = ['open_basedir не мешает (критично)', $basedir === '',
+             $basedir === '' ? 'не задан — запись выше веб-корня разрешена'
+                             : "задан: $basedir — журнал и данные положить внутрь разрешённых путей"];
+$up = dirname(__DIR__, 2) . '/.icb-write-test';
+$canWriteUp = @file_put_contents($up, 'x') !== false;
+if ($canWriteUp) @unlink($up);
+$checks[] = ['Запись на уровень выше проекта', $canWriteUp,
+             $canWriteUp ? 'ок — журнал заявок можно держать вне веб-корня' : 'нет прав — см. DEPLOY.md, шаг 2'];
+
+// Показ ошибок в браузере раскрывает пути и стектрейсы. Бэкенд его выключает сам, но если
+// хостинг включил его жёстко (ini_set запрещён) — это надо увидеть заранее.
+@ini_set('display_errors', '0');
+$errShown = (string)ini_get('display_errors') !== '' && (string)ini_get('display_errors') !== '0';
+$checks[] = ['Показ ошибок PHP выключается', !$errShown,
+             $errShown ? 'ini_set не действует — просить хостинг выключить display_errors' : 'ок'];
+
 $allOk = array_reduce($checks, fn($c, $r) => $c && ($r[1] || !str_contains($r[0], 'критично')), true);
 
 if ($cli) {

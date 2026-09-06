@@ -16,6 +16,16 @@ RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .cgi .pl .py
 AddType text/plain .php .phtml .phps .cgi .pl .py .sh
 
 # И жёстко запретить отдачу исполняемых расширений.
-<FilesMatch "\.(php[0-9]?|phtml|phps|pl|py|cgi|sh|asp|aspx|jsp|htaccess)$">
+<FilesMatch "\.(php[0-9]?|phtml|phps|pl|py|cgi|sh|asp|aspx|jsp|htaccess|svg|html?|xml)$">
     Require all denied
 </FilesMatch>
+
+# Загруженный файл — это картинка и ничего больше. Если кто-то откроет её прямым адресом,
+# песочница и запрет всех источников не дадут выполниться содержимому, спрятанному внутри
+# файла (картинка-полиглот). На встроенные <img> заголовок не влияет — там действует
+# политика самой страницы.
+<IfModule mod_headers.c>
+    Header always set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Content-Disposition "inline"
+</IfModule>
